@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Scrum Daily Timer</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="tap_for_next">Tap for next</string>
+    <string name="participant">Participant</string>
+    <string name="total_meeting_time">"Total meeting time: "</string>
+
+</resources>
