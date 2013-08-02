@@ -14,7 +14,7 @@ public class ScrumTimer {
     private ChronoActivity mActivity = null;
     private long mNumberOfSeconds = 0;
     private long mCountDown = 0;
-    private long mCountDownMax = 60;
+    private long mCountDownMax = 6;
 
     private StringBuffer mPrettyTime = new StringBuffer();
 
@@ -47,6 +47,7 @@ public class ScrumTimer {
         mNumberOfSeconds = 0;
 
         mActivity.setDailyTimer(getPrettyTime(mNumberOfSeconds));
+
     }
 
     /**
@@ -69,6 +70,7 @@ public class ScrumTimer {
      */
     public void stopTimer() {
         mTimer.cancel();
+
     }
 
     /**

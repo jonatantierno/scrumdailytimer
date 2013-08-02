@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import roboguice.RoboGuice;
+import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -30,6 +33,9 @@ public class ChronoActivityTest {
     ChronoActivity out;
     ShadowActivity shadowOut;
     ScrumTimer mockTimer;
+
+    Provider mockPlayerProvider;
+    MediaPlayer mockPlayer;
     View wholeLayout;
     TextView mParticipantTextView;
     TextView mTapForNextTextView;
@@ -42,7 +48,12 @@ public class ChronoActivityTest {
         protected void configure() {
 
             mockTimer = Mockito.mock(ScrumTimer.class);
+            mockPlayer = Mockito.mock(MediaPlayer.class);
+            mockPlayerProvider = Mockito.mock(Provider.class);
+            when(mockPlayerProvider.getAlarmPlayer(Mockito.any(Context.class))).thenReturn(mockPlayer);
+
             bind(ScrumTimer.class).toInstance(mockTimer);
+            bind(Provider.class).toInstance(mockPlayerProvider);
         }
 
     }
@@ -188,6 +199,8 @@ public class ChronoActivityTest {
 
         assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
 
+        verify(mockPlayer).start();
+
     }
 
     @Test
@@ -212,12 +225,13 @@ public class ChronoActivityTest {
     }
 
     /**
-     * Stop timer onDestroy().
+     * Release resources onDestroy().
      */
     @Test
-    public void whenStopThenCancelTimer() {
+    public void whenStopThenCancelTimerReleaseMedia() {
         out.onStop();
 
         verify(mockTimer).stopTimer();
+        verify(mockPlayer).release();
     }
 }
