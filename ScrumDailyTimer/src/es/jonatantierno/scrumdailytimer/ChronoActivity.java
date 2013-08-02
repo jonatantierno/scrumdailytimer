@@ -40,6 +40,8 @@ public class ChronoActivity extends RoboActivity {
 
         setContentView(R.layout.activity_fullscreen);
 
+        mScrumTimer.setActivity(this);
+
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -49,7 +51,7 @@ public class ChronoActivity extends RoboActivity {
                     case NOT_STARTED:
                         mStatus = ChronoStatus.STARTED;
                         mTapForNextTextView.setText(R.string.tap_for_first_participant);
-                        mScrumTimer.start();
+                        mScrumTimer.startTimer();
                         break;
                     case STARTED:
                         mStatus = ChronoStatus.COUNTDOWN;
@@ -59,10 +61,15 @@ public class ChronoActivity extends RoboActivity {
                         repaintParticipants();
 
                         mTapForNextTextView.setText(R.string.tap_for_next);
+
+                        mScrumTimer.resetCountDown();
                         break;
                     case COUNTDOWN:
                         mCurrentParticipant++;
                         repaintParticipants();
+
+                        mScrumTimer.resetCountDown();
+                        resetBackground();
 
                         if (mCurrentParticipant == mNumberOfParticipants) {
                             mTapForNextTextView.setText(R.string.tap_when_done);
@@ -73,16 +80,24 @@ public class ChronoActivity extends RoboActivity {
                         mTapForNextTextView.setText(R.string.tap_to_finish_daily);
                         mParticipantTextView.setVisibility(View.GONE);
                         mStatus = ChronoStatus.END;
+
+                        mScrumTimer.stopCountDown();
                         break;
                     case END:
-                        // debug
-                        timeOut();
-                        mTapForNextTextView.setVisibility(View.GONE);
+
+                        mScrumTimer.stopTimer();
                         break;
                     default:
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        mScrumTimer.stopTimer();
     }
 
     private void repaintParticipants() {
@@ -99,8 +114,14 @@ public class ChronoActivity extends RoboActivity {
      * 
      * @param string time to show.
      */
-    public void setDailyTimer(String string) {
-        mTotalTimeTextView.setText(string);
+    public void setDailyTimer(final String string) {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                mTotalTimeTextView.setText(string);
+            }
+        });
 
     }
 
@@ -109,8 +130,14 @@ public class ChronoActivity extends RoboActivity {
      * 
      * @param string time to show.
      */
-    public void setCountDown(String string) {
-        mCountDownTextView.setText(string);
+    public void setCountDown(final String string) {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                mCountDownTextView.setText(string);
+            }
+        });
 
     }
 
@@ -118,8 +145,21 @@ public class ChronoActivity extends RoboActivity {
      * Call when countdown expires
      */
     public void timeOut() {
-        mWholeLayout.setBackgroundColor(0xFFFF0000);
+        runOnUiThread(new Runnable() {
 
+            @Override
+            public void run() {
+                mWholeLayout.setBackgroundColor(getResources().getColor(R.color.timeout_background));
+            }
+        });
+
+    }
+
+    /**
+     * Set normal background
+     */
+    public void resetBackground() {
+        mWholeLayout.setBackgroundColor(getResources().getColor(R.color.background));
     }
 }
 

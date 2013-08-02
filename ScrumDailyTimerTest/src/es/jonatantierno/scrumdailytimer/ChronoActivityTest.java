@@ -2,6 +2,8 @@
 package es.jonatantierno.scrumdailytimer;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -66,6 +68,8 @@ public class ChronoActivityTest {
     @Test
     public void whenTapShouldStartTimer() {
 
+        verify(mockTimer).setActivity(out);
+
         // Test
         assertEquals(out.getString(R.string.tap_to_start_daily), mTapForNextTextView.getText().toString());
         assertEquals(View.GONE, mParticipantTextView.getVisibility());
@@ -74,7 +78,7 @@ public class ChronoActivityTest {
         wholeLayout.performClick();
 
         // Test
-        verify(mockTimer).start();
+        verify(mockTimer).startTimer();
         assertEquals(out.getString(R.string.tap_for_first_participant), mTapForNextTextView.getText().toString());
     }
 
@@ -103,26 +107,31 @@ public class ChronoActivityTest {
         // Execute.
         // Start timer
         wholeLayout.performClick();
+        verify(mockTimer, times(0)).resetCountDown();
 
         // Start first participant 1/5
         wholeLayout.performClick();
 
         assertEquals("Participant 1/5", mParticipantTextView.getText().toString());
+        verify(mockTimer).resetCountDown();
 
         // participant 2/5
         wholeLayout.performClick();
 
         assertEquals("Participant 2/5", mParticipantTextView.getText().toString());
+        verify(mockTimer, times(2)).resetCountDown();
 
         // participant 3/5
         wholeLayout.performClick();
 
         assertEquals("Participant 3/5", mParticipantTextView.getText().toString());
+        verify(mockTimer, times(3)).resetCountDown();
 
         // participant 4/5
         wholeLayout.performClick();
 
         assertEquals("Participant 4/5", mParticipantTextView.getText().toString());
+        verify(mockTimer, times(4)).resetCountDown();
 
         // participant 5/5
         wholeLayout.performClick();
@@ -130,12 +139,14 @@ public class ChronoActivityTest {
         assertEquals("Participant 5/5", mParticipantTextView.getText().toString());
         assertEquals(out.getString(R.string.tap_when_done), mTapForNextTextView.getText().toString());
         assertEquals(View.VISIBLE, mParticipantTextView.getVisibility());
+        verify(mockTimer, times(5)).resetCountDown();
 
         // finish meeting
         wholeLayout.performClick();
 
         assertEquals(View.GONE, mParticipantTextView.getVisibility());
         assertEquals(out.getString(R.string.tap_to_finish_daily), mTapForNextTextView.getText().toString());
+        verify(mockTimer, times(1)).stopCountDown();
 
     }
 
@@ -156,6 +167,7 @@ public class ChronoActivityTest {
 
         out.setCountDown("12:34");
         assertEquals("12:34", mCountDownTextView.getText().toString());
+
     }
 
     /**
@@ -176,5 +188,36 @@ public class ChronoActivityTest {
 
         assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
 
+    }
+
+    @Test
+    public void whenResetCountDownThenUndoTimeout() {
+        // Execute.
+        // Start timer
+        wholeLayout.performClick();
+
+        // Start first participant 1/5
+        wholeLayout.performClick();
+
+        assertEquals("Participant 1/5", mParticipantTextView.getText().toString());
+
+        out.timeOut();
+
+        assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
+
+        // Start first participant 2/5
+        wholeLayout.performClick();
+
+        assertFalse(0xFFFF0000 == Robolectric.shadowOf(wholeLayout).getBackgroundColor());
+    }
+
+    /**
+     * Stop timer onDestroy().
+     */
+    @Test
+    public void whenStopThenCancelTimer() {
+        out.onStop();
+
+        verify(mockTimer).stopTimer();
     }
 }
