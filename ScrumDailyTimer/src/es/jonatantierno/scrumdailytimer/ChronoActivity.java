@@ -3,6 +3,7 @@ package es.jonatantierno.scrumdailytimer;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -16,6 +17,10 @@ import com.google.inject.Inject;
  * Timer to use in a Scrum Daily Meeting. Main Screen.
  */
 public class ChronoActivity extends RoboActivity {
+
+    public static final String TOTAL_TIME = "TOTAL_TIME";
+    public static final String TIMEOUTS = "TIMEOUTS";
+    public static final String WARMUP_TIME = "WARMUP_TIME";
 
     @InjectView(R.id.wholeLayout)
     private View mWholeLayout;
@@ -38,6 +43,9 @@ public class ChronoActivity extends RoboActivity {
 
     private int mNumberOfParticipants = 5;
     private int mCurrentParticipant = 1;
+    private int mNumberOfTimeouts = 0;
+    private String mWarmUpTime = "00:00";
+
     private ChronoStatus mStatus = ChronoStatus.NOT_STARTED;
     private Vibrator mVibrator;
 
@@ -54,6 +62,7 @@ public class ChronoActivity extends RoboActivity {
         mAlarmPlayer = mProvider.getAlarmPlayer(this);
 
         mCurrentParticipant = 1;
+        mNumberOfTimeouts = 0;
 
         setContentView(R.layout.activity_fullscreen);
 
@@ -73,6 +82,8 @@ public class ChronoActivity extends RoboActivity {
                         break;
                     case STARTED:
                         mStatus = ChronoStatus.COUNTDOWN;
+
+                        mWarmUpTime = mScrumTimer.getPrettyTime();
 
                         mParticipantTextView.setVisibility(View.VISIBLE);
 
@@ -104,6 +115,8 @@ public class ChronoActivity extends RoboActivity {
                     case END:
 
                         mScrumTimer.stopTimer();
+
+                        goToReportActivity();
                         break;
                     default:
                 }
@@ -117,8 +130,23 @@ public class ChronoActivity extends RoboActivity {
         super.onStop();
 
         mScrumTimer.stopTimer();
-        mAlarmPlayer.release();
-        mAlarmPlayer = null;
+        if (mAlarmPlayer != null) {
+            mAlarmPlayer.release();
+            mAlarmPlayer = null;
+        }
+    }
+
+    /**
+     * Go to report activity. Send and intent with all relevant data.
+     */
+    void goToReportActivity() {
+        Intent intent = new Intent(ChronoActivity.this, ReportActivity.class);
+        intent.putExtra(TOTAL_TIME, mScrumTimer.getPrettyTime());
+        intent.putExtra(TIMEOUTS, mNumberOfTimeouts);
+        intent.putExtra(WARMUP_TIME, mWarmUpTime);
+        startActivity(intent);
+        finish();
+
     }
 
     /**
@@ -151,7 +179,7 @@ public class ChronoActivity extends RoboActivity {
 
             @Override
             public void run() {
-                mTotalTimeTextView.setText(string);
+                mTotalTimeTextView.setText(getString(R.string.total_meeting_time) + string);
             }
         });
 
@@ -177,6 +205,9 @@ public class ChronoActivity extends RoboActivity {
      * Call when countdown expires
      */
     public void timeOut() {
+
+        mNumberOfTimeouts++;
+
         if (mAlarmPlayer != null) {
             mAlarmPlayer.start();
         }

@@ -3,6 +3,8 @@ package es.jonatantierno.scrumdailytimer;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +20,7 @@ import org.robolectric.shadows.ShadowActivity;
 
 import roboguice.RoboGuice;
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -152,12 +155,21 @@ public class ChronoActivityTest {
         assertEquals(View.VISIBLE, mParticipantTextView.getVisibility());
         verify(mockTimer, times(5)).resetCountDown();
 
-        // finish meeting
+        // finish last participant
         wholeLayout.performClick();
 
         assertEquals(View.GONE, mParticipantTextView.getVisibility());
         assertEquals(out.getString(R.string.tap_to_finish_daily), mTapForNextTextView.getText().toString());
         verify(mockTimer, times(1)).stopCountDown();
+
+        // Finish meeting and go to report activty
+        wholeLayout.performClick();
+
+        assertTrue(out.isFinishing());
+
+        Intent intent = shadowOut.getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(ReportActivity.class.getCanonicalName(), intent.getComponent().getClassName());
 
     }
 
@@ -174,7 +186,7 @@ public class ChronoActivityTest {
         wholeLayout.performClick();
 
         out.setDailyTimer("01:00");
-        assertEquals("01:00", mTotalTimeTextView.getText().toString());
+        assertEquals("Total meeting time: 01:00", mTotalTimeTextView.getText().toString());
 
         out.setCountDown("12:34");
         assertEquals("12:34", mCountDownTextView.getText().toString());
@@ -233,5 +245,35 @@ public class ChronoActivityTest {
 
         verify(mockTimer).stopTimer();
         verify(mockPlayer).release();
+    }
+
+    /**
+     * Test report data.
+     */
+    @Test
+    public void shouldSendDataToReportActivity() {
+        // Send total time
+        when(mockTimer.getPrettyTime()).thenReturn("00:03").thenReturn("20:13");
+
+        // Send time elapsed between meeting start and first participant
+
+        // Meeting start
+        wholeLayout.performClick();
+
+        // first participant
+        wholeLayout.performClick();
+
+        // Send number of timeouts.
+        out.timeOut();
+        out.timeOut();
+        out.timeOut();
+
+        out.goToReportActivity();
+        Intent intent = shadowOut.getNextStartedActivity();
+
+        assertEquals("20:13", intent.getStringExtra(ChronoActivity.TOTAL_TIME));
+        assertEquals(3, intent.getIntExtra(ChronoActivity.TIMEOUTS, 0));
+        assertEquals("00:03", intent.getStringExtra(ChronoActivity.WARMUP_TIME));
+
     }
 }
