@@ -1,6 +1,7 @@
 
 package es.jonatantierno.scrumdailytimer;
 
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -101,5 +102,15 @@ public class ScrumTimerTest {
         out.tick();
 
         verify(mockActivity).timeOut();
+    }
+
+    @Test
+    public void shouldReturnCurrentTime() {
+        out._startTimer();
+
+        out.tick();
+        out.tick();
+
+        assertEquals("00:02", out.getPrettyTime());
     }
 }
