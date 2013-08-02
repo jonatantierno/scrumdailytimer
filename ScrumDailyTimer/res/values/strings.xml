@@ -10,6 +10,9 @@
     <string name="tap_to_finish_daily">Tap to finish daily</string>
     <string name="tap_when_done">Tap when last participant is done</string>
     <string name="participant">Participant </string>
-    <string name="total_meeting_time">"Total meeting time: "</string>
+    <string name="total_meeting_time">Total meeting time: </string>
+    <string name="report_title">Meeting Report</string>
+    <string name="number_of_timeouts">"Number of timeouts: "</string>
+    <string name="warmup_time">"Preparation time: "</string>
 
 </resources>

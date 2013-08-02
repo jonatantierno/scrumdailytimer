@@ -14,7 +14,7 @@ public class ScrumTimer {
     private ChronoActivity mActivity = null;
     private long mNumberOfSeconds = 0;
     private long mCountDown = 0;
-    private long mCountDownMax = 6;
+    private long mCountDownMax = 60;
 
     private StringBuffer mPrettyTime = new StringBuffer();
 
@@ -128,6 +128,15 @@ public class ScrumTimer {
      */
     void setCountDownSeconds(int i) {
         mCountDown = i;
+    }
+
+    /**
+     * Provides current elapsed time, or time when timer stopped.
+     * 
+     * @return the time as a string in in the format MM:SS
+     */
+    public String getPrettyTime() {
+        return getPrettyTime(mNumberOfSeconds);
     }
 
 }

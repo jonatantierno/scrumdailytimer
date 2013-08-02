@@ -2,6 +2,7 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="background">#0099cc</color>
+    <color name="text_color">#AAffffff</color>
     <color name="timeout_background">#FFFF0000</color>
 
 </resources>
