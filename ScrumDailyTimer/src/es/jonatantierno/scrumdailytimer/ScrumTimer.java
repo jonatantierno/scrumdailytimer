@@ -11,14 +11,15 @@ import java.util.TimerTask;
  * @author jonatantierno
  */
 public class ScrumTimer {
-    private ChronoActivity mActivity;
-    private long mNumberOfSeconds;
-    private long mCountDown;
+    private ChronoActivity mActivity = null;
+    private long mNumberOfSeconds = 0;
+    private long mCountDown = 0;
     private long mCountDownMax = 60;
 
     private StringBuffer mPrettyTime = new StringBuffer();
 
-    private Timer mTimer;
+    private Timer mTimer = null;
+    private boolean mCountingDown = false;
 
     /**
      * Call to start meeting timer.
@@ -35,6 +36,14 @@ public class ScrumTimer {
             }
         }, 0, 1000);
 
+        _startTimer();
+    }
+
+    /**
+     * Like startTimer(), only without the timer itself. for testing purposes.
+     */
+    void _startTimer() {
+
         mNumberOfSeconds = 0;
 
         mActivity.setDailyTimer(getPrettyTime(mNumberOfSeconds));
@@ -44,6 +53,7 @@ public class ScrumTimer {
      * Call when participant is done to reset countdown and start next participant.
      */
     public void resetCountDown() {
+        mCountingDown = true;
         mCountDown = mCountDownMax;
     }
 
@@ -51,8 +61,7 @@ public class ScrumTimer {
      * Call when last participant is done to stop countdown. It is not started again.
      */
     public void stopCountDown() {
-        // TODO Auto-generated method stub
-
+        mCountingDown = false;
     }
 
     /**
@@ -76,11 +85,18 @@ public class ScrumTimer {
      */
     public void tick() {
         mNumberOfSeconds++;
-
-        mCountDown--;
-
         mActivity.setDailyTimer(getPrettyTime(mNumberOfSeconds));
-        mActivity.setCountDown(getPrettyTime(mCountDown));
+
+        if (mCountingDown) {
+            mCountDown--;
+
+            if (mCountDown < 0) {
+                mActivity.timeOut();
+                stopCountDown();
+            } else {
+                mActivity.setCountDown(getPrettyTime(mCountDown));
+            }
+        }
     }
 
     private String getPrettyTime(long seconds) {
@@ -101,6 +117,15 @@ public class ScrumTimer {
         mPrettyTime.append(secondsToShow);
 
         return mPrettyTime.toString();
+    }
+
+    /**
+     * Sets the countdown seconds. For testing.
+     * 
+     * @param i countdown seconds
+     */
+    void setCountDownSeconds(int i) {
+        mCountDown = i;
     }
 
 }

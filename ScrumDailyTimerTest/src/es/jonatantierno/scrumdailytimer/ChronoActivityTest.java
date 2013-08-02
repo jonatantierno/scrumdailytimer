@@ -2,6 +2,7 @@
 package es.jonatantierno.scrumdailytimer;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -166,6 +167,7 @@ public class ChronoActivityTest {
 
         out.setCountDown("12:34");
         assertEquals("12:34", mCountDownTextView.getText().toString());
+
     }
 
     /**
@@ -186,6 +188,27 @@ public class ChronoActivityTest {
 
         assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
 
+    }
+
+    @Test
+    public void whenResetCountDownThenUndoTimeout() {
+        // Execute.
+        // Start timer
+        wholeLayout.performClick();
+
+        // Start first participant 1/5
+        wholeLayout.performClick();
+
+        assertEquals("Participant 1/5", mParticipantTextView.getText().toString());
+
+        out.timeOut();
+
+        assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
+
+        // Start first participant 2/5
+        wholeLayout.performClick();
+
+        assertFalse(0xFFFF0000 == Robolectric.shadowOf(wholeLayout).getBackgroundColor());
     }
 
     /**

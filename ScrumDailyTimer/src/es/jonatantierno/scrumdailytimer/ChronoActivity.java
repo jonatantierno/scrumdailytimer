@@ -69,6 +69,7 @@ public class ChronoActivity extends RoboActivity {
                         repaintParticipants();
 
                         mScrumTimer.resetCountDown();
+                        resetBackground();
 
                         if (mCurrentParticipant == mNumberOfParticipants) {
                             mTapForNextTextView.setText(R.string.tap_when_done);
@@ -83,9 +84,6 @@ public class ChronoActivity extends RoboActivity {
                         mScrumTimer.stopCountDown();
                         break;
                     case END:
-                        // debug
-                        timeOut();
-                        mTapForNextTextView.setVisibility(View.GONE);
 
                         mScrumTimer.stopTimer();
                         break;
@@ -151,10 +149,17 @@ public class ChronoActivity extends RoboActivity {
 
             @Override
             public void run() {
-                mWholeLayout.setBackgroundColor(0xFFFF0000);
+                mWholeLayout.setBackgroundColor(getResources().getColor(R.color.timeout_background));
             }
         });
 
+    }
+
+    /**
+     * Set normal background
+     */
+    public void resetBackground() {
+        mWholeLayout.setBackgroundColor(getResources().getColor(R.color.background));
     }
 }
 

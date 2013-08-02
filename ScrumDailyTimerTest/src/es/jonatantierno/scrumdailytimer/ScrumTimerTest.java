@@ -2,11 +2,13 @@
 package es.jonatantierno.scrumdailytimer;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -33,7 +35,7 @@ public class ScrumTimerTest {
     @Test
     public void whenTickShouldUpdateActivityTimer() {
 
-        out.startTimer();
+        out._startTimer();
 
         verify(mockActivity).setDailyTimer("00:00");
 
@@ -44,6 +46,10 @@ public class ScrumTimerTest {
         out.tick();
 
         verify(mockActivity).setDailyTimer("00:02");
+
+        // Countdown is not affected
+        verify(mockActivity, times(0)).setCountDown(Mockito.anyString());
+
     }
 
     /**
@@ -51,7 +57,7 @@ public class ScrumTimerTest {
      */
     @Test
     public void shouldUpdateCountDown() {
-        out.startTimer();
+        out._startTimer();
 
         out.resetCountDown();
 
@@ -62,6 +68,39 @@ public class ScrumTimerTest {
         out.tick();
 
         verify(mockActivity).setCountDown("00:58");
+    }
+
+    @Test
+    public void shouldStopCountDown() {
+        out._startTimer();
+
+        out.resetCountDown();
+
+        out.tick();
+
+        out.stopCountDown();
+
+        out.tick();
+        out.tick();
+        out.tick();
+
+        verify(mockActivity, times(1)).setCountDown(Mockito.anyString());
+    }
+
+    @Test
+    public void whenCountDownEndsThenCallTimeout() {
+        out._startTimer();
+
+        out.resetCountDown();
+
+        out.setCountDownSeconds(0);
+
+        out.tick();
+
+        // only once...
+        out.tick();
+
+        verify(mockActivity).timeOut();
     }
 
 }
