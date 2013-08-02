@@ -3,8 +3,11 @@ package es.jonatantierno.scrumdailytimer;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -28,13 +31,27 @@ public class ChronoActivity extends RoboActivity {
     @Inject
     private ScrumTimer mScrumTimer;
 
+    @Inject
+    private Provider mProvider;
+
+    private MediaPlayer mAlarmPlayer;
+
     private int mNumberOfParticipants = 5;
     private int mCurrentParticipant = 1;
     private ChronoStatus mStatus = ChronoStatus.NOT_STARTED;
+    private Vibrator mVibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Ensure screen does not turn off
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
+        mAlarmPlayer = mProvider.getAlarmPlayer(this);
 
         mCurrentParticipant = 1;
 
@@ -46,6 +63,7 @@ public class ChronoActivity extends RoboActivity {
 
             @Override
             public void onClick(View v) {
+                vibrate();
 
                 switch (mStatus) {
                     case NOT_STARTED:
@@ -90,6 +108,7 @@ public class ChronoActivity extends RoboActivity {
                     default:
                 }
             }
+
         });
     }
 
@@ -98,6 +117,19 @@ public class ChronoActivity extends RoboActivity {
         super.onStop();
 
         mScrumTimer.stopTimer();
+        mAlarmPlayer.release();
+        mAlarmPlayer = null;
+    }
+
+    /**
+     * Haptic feedback. For > Honeycomb that would be:
+     * mWholeLayout.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY); But seems to subtle. Will use
+     * {@link Vibrator}, and be Gingerbread compatible besides.
+     */
+    private void vibrate() {
+        if (mVibrator != null) {
+            mVibrator.vibrate(170);
+        }
     }
 
     private void repaintParticipants() {
@@ -145,6 +177,10 @@ public class ChronoActivity extends RoboActivity {
      * Call when countdown expires
      */
     public void timeOut() {
+        if (mAlarmPlayer != null) {
+            mAlarmPlayer.start();
+        }
+
         runOnUiThread(new Runnable() {
 
             @Override

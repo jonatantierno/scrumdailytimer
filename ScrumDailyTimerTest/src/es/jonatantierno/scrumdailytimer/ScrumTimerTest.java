@@ -21,12 +21,12 @@ public class ScrumTimerTest {
 
     @Before
     public void setUp() throws Exception {
-        out = new ScrumTimer();
 
         // Fixture
         mockActivity = mock(ChronoActivity.class);
-        out.setActivity(mockActivity);
 
+        out = new ScrumTimer();
+        out.setActivity(mockActivity);
     }
 
     /**
@@ -102,5 +102,4 @@ public class ScrumTimerTest {
 
         verify(mockActivity).timeOut();
     }
-
 }
