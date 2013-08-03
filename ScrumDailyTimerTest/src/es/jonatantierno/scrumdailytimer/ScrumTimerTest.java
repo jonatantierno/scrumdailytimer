@@ -28,6 +28,7 @@ public class ScrumTimerTest {
 
         out = new ScrumTimer();
         out.setActivity(mockActivity);
+        out.setTimeSlotLength(60);
     }
 
     /**
@@ -112,5 +113,25 @@ public class ScrumTimerTest {
         out.tick();
 
         assertEquals("00:02", out.getPrettyTime());
+    }
+
+    @Test
+    public void shouldReturnCurrentCountDown() {
+        out._startTimer();
+        out.resetCountDown();
+
+        out.tick();
+        out.tick();
+
+        assertEquals("00:58", out.getPrettyCountDown());
+    }
+
+    @Test
+    public void timeSlotDurationShouldBeConfigurable() {
+        out.setTimeSlotLength(30);
+
+        out._startTimer();
+        out.resetCountDown();
+        assertEquals(30, out.getCountDownSeconds());
     }
 }

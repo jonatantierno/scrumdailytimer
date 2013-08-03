@@ -69,7 +69,9 @@ public class ScrumTimer {
      * Call to stop timer and ent meeting.
      */
     public void stopTimer() {
-        mTimer.cancel();
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
 
     }
 
@@ -131,12 +133,37 @@ public class ScrumTimer {
     }
 
     /**
+     * gets countdown seconds. For testing.
+     */
+    long getCountDownSeconds() {
+        return mCountDown;
+    }
+
+    /**
      * Provides current elapsed time, or time when timer stopped.
      * 
      * @return the time as a string in in the format MM:SS
      */
     public String getPrettyTime() {
         return getPrettyTime(mNumberOfSeconds);
+    }
+
+    /**
+     * Provides current count down time, or countdown when timer stopped.
+     * 
+     * @return the countdown time as a string in in the format MM:SS
+     */
+    public String getPrettyCountDown() {
+        return getPrettyTime(mCountDown);
+    }
+
+    /**
+     * Sets the duration of the time slot of each participant.
+     * 
+     * @param i time slot duration in seconds
+     */
+    public void setTimeSlotLength(int i) {
+        mCountDownMax = i;
     }
 
 }

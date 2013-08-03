@@ -4,5 +4,6 @@
     <color name="background">#0099cc</color>
     <color name="text_color">#AAffffff</color>
     <color name="timeout_background">#FFFF0000</color>
+    <color name="meeting_background">#008866</color>
 
 </resources>
