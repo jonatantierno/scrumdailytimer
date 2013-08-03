@@ -16,13 +16,17 @@
         android:theme="@style/AppTheme" >
         
         <activity
-            android:name="es.jonatantierno.scrumdailytimer.ReportActivity" />
+            android:name="es.jonatantierno.scrumdailytimer.ReportActivity" 
+             android:theme="@style/FullscreenActionBarStyle" />
+        <activity
+            android:name="es.jonatantierno.scrumdailytimer.SettingsActivity" 
+             android:theme="@style/FullscreenActionBarStyle" />
         
         <activity
             android:name="es.jonatantierno.scrumdailytimer.ChronoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
- >
+            android:label="@string/app_name" 
+            android:theme="@style/FullscreenActionBarStyle" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

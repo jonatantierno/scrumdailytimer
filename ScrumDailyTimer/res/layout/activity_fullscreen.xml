@@ -1,65 +1,76 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/wholeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:orientation="vertical"
     tools:context=".ChronoActivity" >
 
-    <FrameLayout
-        android:id="@+id/upperHalfLayout"
+    <LinearLayout
+        android:id="@+id/wholeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
+        android:background="@color/background"
+        android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/participantTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_margin="10dp"
-            android:text="@string/participant"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:visibility="gone" />
+        <FrameLayout
+            android:id="@+id/upperHalfLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
 
-        <TextView
-            android:id="@+id/countDownTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:text="00:00"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="120sp" />
+            <TextView
+                android:id="@+id/participantTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_margin="10dp"
+                android:text="@string/participant"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:visibility="gone" />
 
-    </FrameLayout>
+            <TextView
+                android:id="@+id/countDownTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:text="00:00"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="120sp" />
+        </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/lowerHalfLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1" >
+        <FrameLayout
+            android:id="@+id/lowerHalfLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
 
-        <TextView
-            android:id="@+id/tapForNextTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_margin="10dp"
-            android:text="@string/tap_to_start_daily"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView
+                android:id="@+id/tapForNextTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_margin="10dp"
+                android:text="@string/tap_to_start_daily"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/totalTimeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:text="@string/total_meeting_time"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="20sp" />
+            <TextView
+                android:id="@+id/totalTimeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:text="@string/total_meeting_time"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="20sp" />
+        </FrameLayout>
+    </LinearLayout>
 
-    </FrameLayout>
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_margin="10dp"
+        android:src="@drawable/action_settings" />
 
-</LinearLayout>
+</FrameLayout>
