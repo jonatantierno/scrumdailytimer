@@ -4,11 +4,13 @@ package es.jonatantierno.scrumdailytimer;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -21,6 +23,9 @@ public class ChronoActivity extends RoboActivity {
     public static final String TOTAL_TIME = "TOTAL_TIME";
     public static final String TIMEOUTS = "TIMEOUTS";
     public static final String WARMUP_TIME = "WARMUP_TIME";
+    public static final String PREFS_NAME = "CHRONO_PREFERENCES";
+    public static final String NUMBER_OF_PARTICIPANTS = "NUMBER_OF_PARTICIPANTS";
+    public static final String TIME_SLOT_LENGTH = "TIME_SLOT_LENGTH";
 
     @InjectView(R.id.wholeLayout)
     private View mWholeLayout;
@@ -32,6 +37,8 @@ public class ChronoActivity extends RoboActivity {
     private TextView mTotalTimeTextView;
     @InjectView(R.id.tapForNextTextView)
     private TextView mTapForNextTextView;
+    @InjectView(R.id.settingsButton)
+    private ImageButton mSettingsButton;
 
     @Inject
     private ScrumTimer mScrumTimer;
@@ -61,12 +68,20 @@ public class ChronoActivity extends RoboActivity {
 
         mAlarmPlayer = mProvider.getAlarmPlayer(this);
 
-        mCurrentParticipant = 1;
-        mNumberOfTimeouts = 0;
-
         setContentView(R.layout.activity_fullscreen);
 
         mScrumTimer.setActivity(this);
+
+        mCurrentParticipant = 1;
+        mNumberOfTimeouts = 0;
+
+        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                startActivity(new Intent(ChronoActivity.this, SettingsActivity.class));
+            }
+        });
 
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
 
@@ -77,6 +92,8 @@ public class ChronoActivity extends RoboActivity {
                 switch (mStatus) {
                     case NOT_STARTED:
                         mStatus = ChronoStatus.STARTED;
+                        mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
+                        mSettingsButton.setVisibility(View.GONE);
                         mTapForNextTextView.setText(R.string.tap_for_first_participant);
                         mScrumTimer.startTimer();
                         break;
@@ -92,12 +109,15 @@ public class ChronoActivity extends RoboActivity {
                         mTapForNextTextView.setText(R.string.tap_for_next);
 
                         mScrumTimer.resetCountDown();
+                        mCountDownTextView.setText(mScrumTimer.getPrettyCountDown());
+
                         break;
                     case COUNTDOWN:
                         mCurrentParticipant++;
                         repaintParticipants();
 
                         mScrumTimer.resetCountDown();
+                        mCountDownTextView.setText(mScrumTimer.getPrettyCountDown());
                         resetBackground();
 
                         if (mCurrentParticipant == mNumberOfParticipants) {
@@ -108,6 +128,7 @@ public class ChronoActivity extends RoboActivity {
                     case LAST_COUNTDOWN:
                         mTapForNextTextView.setText(R.string.tap_to_finish_daily);
                         mParticipantTextView.setVisibility(View.GONE);
+                        mCountDownTextView.setText("00:00");
                         mStatus = ChronoStatus.END;
 
                         mScrumTimer.stopCountDown();
@@ -123,6 +144,30 @@ public class ChronoActivity extends RoboActivity {
             }
 
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Get settings
+        mNumberOfParticipants = getSharedPreferences().getInt(NUMBER_OF_PARTICIPANTS, -1);
+
+        int timeSlotLength = getSharedPreferences().getInt(TIME_SLOT_LENGTH, -1);
+
+        if (mNumberOfParticipants == -1 || timeSlotLength == -1) {
+            // Go to settings activity
+            startActivity(new Intent(this, SettingsActivity.class));
+            return;
+        }
+        mScrumTimer.setTimeSlotLength(timeSlotLength);
+    };
+
+    /**
+     * For testing.
+     */
+    SharedPreferences getSharedPreferences() {
+        return getSharedPreferences(PREFS_NAME, 0);
     }
 
     @Override
@@ -226,7 +271,7 @@ public class ChronoActivity extends RoboActivity {
      * Set normal background
      */
     public void resetBackground() {
-        mWholeLayout.setBackgroundColor(getResources().getColor(R.color.background));
+        mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
     }
 }
 

@@ -27,6 +27,7 @@
             android:id="@+id/totalTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:text="@string/total_meeting_time"
             android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -52,6 +53,7 @@
             android:id="@+id/timeOutsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:text="@string/number_of_timeouts"
             android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -76,6 +78,7 @@
             android:id="@+id/warmUpTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:text="@string/warmup_time"
             android:textAppearance="?android:attr/textAppearanceLarge" />

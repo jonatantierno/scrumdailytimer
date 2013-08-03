@@ -17,8 +17,7 @@
         <item name="buttonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
     </style>
 
-    <style name="FullscreenActionBarStyle" parent="android:Widget.Holo.ActionBar">
-        <item name="android:background">@color/black_overlay</item>
+    <style name="FullscreenActionBarStyle" parent="android:Theme.Holo.NoActionBar">
     </style>
 
 </resources>

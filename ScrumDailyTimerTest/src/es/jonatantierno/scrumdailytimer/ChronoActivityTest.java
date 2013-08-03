@@ -21,9 +21,11 @@ import org.robolectric.shadows.ShadowActivity;
 import roboguice.RoboGuice;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.inject.AbstractModule;
@@ -40,10 +42,12 @@ public class ChronoActivityTest {
     Provider mockPlayerProvider;
     MediaPlayer mockPlayer;
     View wholeLayout;
+    SharedPreferences mockPreferences;
     TextView mParticipantTextView;
     TextView mTapForNextTextView;
     TextView mCountDownTextView;
     TextView mTotalTimeTextView;
+    ImageButton mSettingsButton;
 
     public class TestModule extends AbstractModule {
 
@@ -66,7 +70,17 @@ public class ChronoActivityTest {
         RoboGuice.setBaseApplicationInjector(Robolectric.application, RoboGuice.DEFAULT_STAGE,
                 Modules.override(RoboGuice.newDefaultRoboModule(Robolectric.application)).with(new TestModule()));
 
-        out = new ChronoActivity();
+        mockPreferences = Mockito.mock(SharedPreferences.class);
+
+        when(mockPreferences.getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1)).thenReturn(5);
+        when(mockPreferences.getInt(ChronoActivity.TIME_SLOT_LENGTH, -1)).thenReturn(60);
+
+        out = new ChronoActivity() {
+            @Override
+            SharedPreferences getSharedPreferences() {
+                return mockPreferences;
+            }
+        };
         shadowOut = Robolectric.shadowOf(out);
 
         // Fixture
@@ -77,6 +91,7 @@ public class ChronoActivityTest {
         mTapForNextTextView = (TextView) out.findViewById(R.id.tapForNextTextView);
         mCountDownTextView = (TextView) out.findViewById(R.id.countDownTextView);
         mTotalTimeTextView = (TextView) out.findViewById(R.id.totalTimeTextView);
+        mSettingsButton = (ImageButton) out.findViewById(R.id.settingsButton);
     }
 
     @Test
@@ -117,14 +132,20 @@ public class ChronoActivityTest {
     @Test
     public void whenTapFiveTimesShouldIncrementParticipantCounterAndStop() {
         // Fixture
+        when(mockTimer.getPrettyCountDown()).thenReturn("00:60");
 
         // Execute.
+        out.onResume();
+
         // Start timer
+        assertEquals("00:00", mCountDownTextView.getText().toString());
+
         wholeLayout.performClick();
         verify(mockTimer, times(0)).resetCountDown();
 
         // Start first participant 1/5
         wholeLayout.performClick();
+        assertEquals("00:60", mCountDownTextView.getText().toString());
 
         assertEquals("Participant 1/5", mParticipantTextView.getText().toString());
         verify(mockTimer).resetCountDown();
@@ -160,6 +181,7 @@ public class ChronoActivityTest {
 
         assertEquals(View.GONE, mParticipantTextView.getVisibility());
         assertEquals(out.getString(R.string.tap_to_finish_daily), mTapForNextTextView.getText().toString());
+        assertEquals("00:00", mCountDownTextView.getText().toString());
         verify(mockTimer, times(1)).stopCountDown();
 
         // Finish meeting and go to report activty
@@ -274,6 +296,87 @@ public class ChronoActivityTest {
         assertEquals("20:13", intent.getStringExtra(ChronoActivity.TOTAL_TIME));
         assertEquals(3, intent.getIntExtra(ChronoActivity.TIMEOUTS, 0));
         assertEquals("00:03", intent.getStringExtra(ChronoActivity.WARMUP_TIME));
+
+    }
+
+    /**
+     * Number of participants and time slot length stored in settings.
+     */
+    @Test
+    public void shouldObtainParametersFromSettings() {
+        out.onResume();
+        verify(mockPreferences).getInt(ChronoActivity.TIME_SLOT_LENGTH, -1);
+        verify(mockPreferences).getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1);
+        verify(mockTimer).setTimeSlotLength(60);
+    }
+
+    @Test
+    public void whenNumberOfParticipantsNotSetThenGoToSettings() {
+        // Fixture
+        when(mockPreferences.getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1)).thenReturn(-1);
+
+        // Execute
+        out.onResume();
+
+        assertFalse(out.isFinishing());
+
+        Intent intent = shadowOut.getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(SettingsActivity.class.getCanonicalName(), intent.getComponent().getClassName());
+    }
+
+    @Test
+    public void whenTimeSlotLengthNotSetThenGoToSettings() {
+        // Fixture
+        when(mockPreferences.getInt(ChronoActivity.TIME_SLOT_LENGTH, -1)).thenReturn(-1);
+
+        // Execute
+        out.onResume();
+
+        assertFalse(out.isFinishing());
+
+        Intent intent = shadowOut.getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(SettingsActivity.class.getCanonicalName(), intent.getComponent().getClassName());
+    }
+
+    @Test
+    public void whenSettingsButtonPressedThenGoToSettings() {
+
+        mSettingsButton.performClick();
+
+        assertFalse(out.isFinishing());
+
+        Intent intent = shadowOut.getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(SettingsActivity.class.getCanonicalName(), intent.getComponent().getClassName());
+    }
+
+    @Test
+    public void whenMeetingHasStartedThenHideSettingsButton() {
+
+        // Send time elapsed between meeting start and first participant
+        assertEquals(View.VISIBLE, mSettingsButton.getVisibility());
+
+        // Meeting start
+        wholeLayout.performClick();
+        wholeLayout.performClick();
+
+        assertEquals(View.GONE, mSettingsButton.getVisibility());
+
+    }
+
+    @Test
+    public void shouldChangeColorDuringMeeting() {
+
+        assertEquals(out.getResources().getColor(R.color.background), Robolectric.shadowOf(wholeLayout)
+                .getBackgroundColor());
+
+        // Start meeting
+        wholeLayout.performClick();
+
+        assertEquals(out.getResources().getColor(R.color.meeting_background), Robolectric.shadowOf(wholeLayout)
+                .getBackgroundColor());
 
     }
 }
