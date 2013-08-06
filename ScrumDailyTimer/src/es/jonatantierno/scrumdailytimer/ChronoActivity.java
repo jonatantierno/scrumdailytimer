@@ -167,6 +167,13 @@ public class ChronoActivity extends RoboActivity {
         mScrumTimer.setTimeSlotLength(timeSlotLength);
     };
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Temporal solution: finish the meeting.
+        finish();
+    };
+
     /**
      * For testing.
      */
