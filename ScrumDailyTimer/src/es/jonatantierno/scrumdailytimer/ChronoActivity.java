@@ -66,7 +66,11 @@ public class ChronoActivity extends RoboActivity {
 
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
-        mAlarmPlayer = mProvider.getAlarmPlayer(this);
+        new Thread() {
+            public void run() {
+                mAlarmPlayer = mProvider.getAlarmPlayer(ChronoActivity.this);
+            }
+        }.start();
 
         setContentView(R.layout.activity_fullscreen);
 
