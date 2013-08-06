@@ -379,4 +379,15 @@ public class ChronoActivityTest {
                 .getBackgroundColor());
 
     }
+
+    /**
+     * Temporal solution while put the timer in a service: Stop meeting when activity goes onPause().
+     */
+    @Test
+    public void shouldStopIfPaused() {
+        out.onPause();
+
+        assertTrue(out.isFinishing());
+
+    }
 }
