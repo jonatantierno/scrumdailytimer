@@ -1,6 +1,7 @@
 
 package es.jonatantierno.scrumdailytimer;
 
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +52,8 @@ public class SettingsActivityTest {
         mockPreferences = mock(SharedPreferences.class);
         mockEditor = mock(Editor.class);
         when(mockPreferences.edit()).thenReturn(mockEditor);
+        when(mockPreferences.getInt(ChronoActivity.TIME_SLOT_LENGTH, -1)).thenReturn(30);
+        when(mockPreferences.getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1)).thenReturn(3);
 
         out = new SettingsActivity() {
             @Override
@@ -100,4 +103,15 @@ public class SettingsActivityTest {
         verify(mockEditor).putInt(ChronoActivity.TIME_SLOT_LENGTH, 60);
         verify(mockEditor).commit();
     }
+
+    @Test
+    public void shouldObtainInitialValuesFromSettings() {
+
+        verify(mockPreferences).getInt(ChronoActivity.TIME_SLOT_LENGTH, -1);
+        verify(mockPreferences).getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1);
+
+        assertEquals("30", mTimeSlotDurationEditText.getText().toString());
+        assertEquals("3", mNumberOfParticipantsEditText.getText().toString());
+    }
+
 }
