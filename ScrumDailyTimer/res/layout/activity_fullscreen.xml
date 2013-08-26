@@ -36,6 +36,14 @@
                 android:text="00:00"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="120sp" />
+
+            <SeekBar
+                android:id="@+id/seekBar1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_margin="20dp" />
+
         </FrameLayout>
 
         <FrameLayout
@@ -62,6 +70,7 @@
                 android:text="@string/total_meeting_time"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="20sp" />
+
         </FrameLayout>
     </LinearLayout>
 

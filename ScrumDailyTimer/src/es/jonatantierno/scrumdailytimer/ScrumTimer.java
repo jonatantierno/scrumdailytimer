@@ -103,7 +103,7 @@ public class ScrumTimer {
         }
     }
 
-    private String getPrettyTime(long seconds) {
+    public String getPrettyTime(long seconds) {
         long minutesToShow = seconds / 60;
         long secondsToShow = seconds % 60;
 

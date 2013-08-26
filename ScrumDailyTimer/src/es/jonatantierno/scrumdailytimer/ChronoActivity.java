@@ -11,6 +11,7 @@ import android.os.Vibrator;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -39,6 +40,8 @@ public class ChronoActivity extends RoboActivity {
     private TextView mTapForNextTextView;
     @InjectView(R.id.settingsButton)
     private ImageButton mSettingsButton;
+    @InjectView(R.id.seekBar1)
+    private SeekBar mSeekBar;
 
     @Inject
     private ScrumTimer mScrumTimer;
@@ -75,6 +78,34 @@ public class ChronoActivity extends RoboActivity {
         setContentView(R.layout.activity_fullscreen);
 
         mScrumTimer.setActivity(this);
+
+        mSeekBar.setMax(300);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Nothing (STORE VALUE?)
+                int progress = seekBar.getProgress();
+                int progress_slot = (int) (Math.round((double) progress / (double) 30)) * 30;
+
+                seekBar.setProgress(progress_slot);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Set value?
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Set Value
+                int progress_slot = (int) (Math.round((double) progress / (double) 30)) * 30;
+                mCountDownTextView.setText(mScrumTimer.getPrettyTime(progress_slot));
+
+            }
+        });
 
         mCurrentParticipant = 1;
         mNumberOfTimeouts = 0;
