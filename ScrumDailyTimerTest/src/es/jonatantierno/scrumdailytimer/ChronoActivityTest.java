@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,10 +23,12 @@ import roboguice.RoboGuice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.inject.AbstractModule;
@@ -43,11 +46,16 @@ public class ChronoActivityTest {
     MediaPlayer mockPlayer;
     View wholeLayout;
     SharedPreferences mockPreferences;
+    Editor mockEditor;
+
+    SlotSeekBarController mockSeekBarController;
+
     TextView mParticipantTextView;
     TextView mTapForNextTextView;
     TextView mCountDownTextView;
     TextView mTotalTimeTextView;
     ImageButton mSettingsButton;
+    SeekBar mSeekBar;
 
     public class TestModule extends AbstractModule {
 
@@ -57,10 +65,12 @@ public class ChronoActivityTest {
             mockTimer = Mockito.mock(ScrumTimer.class);
             mockPlayer = Mockito.mock(MediaPlayer.class);
             mockPlayerProvider = Mockito.mock(Provider.class);
+            mockSeekBarController = Mockito.mock(SlotSeekBarController.class);
             when(mockPlayerProvider.getAlarmPlayer(Mockito.any(Context.class))).thenReturn(mockPlayer);
 
             bind(ScrumTimer.class).toInstance(mockTimer);
             bind(Provider.class).toInstance(mockPlayerProvider);
+            bind(SlotSeekBarController.class).toInstance(mockSeekBarController);
         }
 
     }
@@ -70,8 +80,10 @@ public class ChronoActivityTest {
         RoboGuice.setBaseApplicationInjector(Robolectric.application, RoboGuice.DEFAULT_STAGE,
                 Modules.override(RoboGuice.newDefaultRoboModule(Robolectric.application)).with(new TestModule()));
 
+        mockEditor = mock(Editor.class);
         mockPreferences = Mockito.mock(SharedPreferences.class);
 
+        when(mockPreferences.edit()).thenReturn(mockEditor);
         when(mockPreferences.getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1)).thenReturn(5);
         when(mockPreferences.getInt(ChronoActivity.TIME_SLOT_LENGTH, -1)).thenReturn(60);
 
@@ -92,6 +104,7 @@ public class ChronoActivityTest {
         mCountDownTextView = (TextView) out.findViewById(R.id.countDownTextView);
         mTotalTimeTextView = (TextView) out.findViewById(R.id.totalTimeTextView);
         mSettingsButton = (ImageButton) out.findViewById(R.id.settingsButton);
+        mSeekBar = (SeekBar) out.findViewById(R.id.seekBar1);
     }
 
     @Test
@@ -308,6 +321,8 @@ public class ChronoActivityTest {
         verify(mockPreferences).getInt(ChronoActivity.TIME_SLOT_LENGTH, -1);
         verify(mockPreferences).getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1);
         verify(mockTimer).setTimeSlotLength(60);
+
+        assertEquals(60, mSeekBar.getProgress());
     }
 
     @Test
@@ -325,19 +340,18 @@ public class ChronoActivityTest {
         assertEquals(SettingsActivity.class.getCanonicalName(), intent.getComponent().getClassName());
     }
 
+    /**
+     * Default value is 60 seconds
+     */
     @Test
-    public void whenTimeSlotLengthNotSetThenGoToSettings() {
+    public void whenTimeSlotLengthNotSetThenDefaultValue() {
         // Fixture
         when(mockPreferences.getInt(ChronoActivity.TIME_SLOT_LENGTH, -1)).thenReturn(-1);
 
         // Execute
         out.onResume();
 
-        assertFalse(out.isFinishing());
-
-        Intent intent = shadowOut.getNextStartedActivity();
-        assertNotNull(intent);
-        assertEquals(SettingsActivity.class.getCanonicalName(), intent.getComponent().getClassName());
+        assertEquals(mSeekBar.getProgress(), SlotSeekBarController.DEFAULT_VALUE);
     }
 
     @Test
@@ -378,5 +392,65 @@ public class ChronoActivityTest {
         assertEquals(out.getResources().getColor(R.color.meeting_background), Robolectric.shadowOf(wholeLayout)
                 .getBackgroundColor());
 
+    }
+
+    /**
+     * Hide SeekBar when meeting starts.
+     */
+    @Test
+    public void whenStartMeetingSeekBarShoulDissapear() {
+        assertEquals(View.VISIBLE, mSeekBar.getVisibility());
+
+        wholeLayout.performClick();
+
+        assertEquals(View.GONE, mSeekBar.getVisibility());
+    }
+
+    /**
+     * when seekbar value changes, update chrono
+     */
+    @Test
+    public void whenSeekBarValueChangesThenUpdateChrono() {
+        when(mockTimer.getPrettyTime(40)).thenReturn("00:30");
+
+        out.setTime(40);
+
+        assertEquals("00:30", mCountDownTextView.getText());
+    }
+
+    /**
+     * Configure seekbar with controller.
+     */
+    @Test
+    public void shouldSetSeekbarController() {
+        verify(mockSeekBarController).configure(mSeekBar, out);
+    }
+
+    /**
+     * Store value from seekbar in settings
+     */
+    @Test
+    public void whenPauseThenStoreValueFromSeekBar() {
+
+        mSeekBar.setProgress(90);
+
+        out.onPause();
+
+        verify(mockEditor).putInt(ChronoActivity.TIME_SLOT_LENGTH, 90);
+        verify(mockEditor).commit();
+    }
+
+    /**
+     * when start, Store value from seekbar in settings
+     */
+    @Test
+    public void whenStartMeetingThenStoreValueFromSeekBar() {
+
+        mSeekBar.setProgress(90);
+
+        wholeLayout.performClick();
+
+        verify(mockEditor).putInt(ChronoActivity.TIME_SLOT_LENGTH, 90);
+        verify(mockEditor).commit();
     }
 }
