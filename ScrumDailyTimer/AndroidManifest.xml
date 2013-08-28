@@ -5,7 +5,7 @@
     android:versionName="1.01" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="17"
         android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.VIBRATE"/>
     
@@ -21,9 +21,10 @@
         <activity
             android:name="es.jonatantierno.scrumdailytimer.SettingsActivity" 
              android:theme="@style/FullscreenActionBarStyle" />
-        
+            
+            
         <activity
-            android:name="es.jonatantierno.scrumdailytimer.ChronoActivity"
+            android:name="es.jonatantierno.scrumdailytimer.FragmentExampleActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name" 
             android:theme="@style/FullscreenActionBarStyle" >
@@ -32,7 +33,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity>     
     </application>
 
 </manifest>
