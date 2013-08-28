@@ -5,12 +5,14 @@ import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -18,7 +20,7 @@ import com.google.inject.Inject;
 /**
  * Timer to use in a Scrum Daily Meeting. Main Screen.
  */
-public class ChronoActivity extends RoboActivity {
+public class ChronoActivity extends RoboActivity implements ChronoInterface {
 
     public static final String TOTAL_TIME = "TOTAL_TIME";
     public static final String TIMEOUTS = "TIMEOUTS";
@@ -39,9 +41,14 @@ public class ChronoActivity extends RoboActivity {
     private TextView mTapForNextTextView;
     @InjectView(R.id.settingsButton)
     private ImageButton mSettingsButton;
+    @InjectView(R.id.seekBar1)
+    private SeekBar mSeekBar;
 
     @Inject
     private ScrumTimer mScrumTimer;
+
+    @Inject
+    SlotSeekBarController mSeekBarController;
 
     @Inject
     private Provider mProvider;
@@ -76,6 +83,8 @@ public class ChronoActivity extends RoboActivity {
 
         mScrumTimer.setActivity(this);
 
+        mSeekBarController.configure(mSeekBar, this);
+
         mCurrentParticipant = 1;
         mNumberOfTimeouts = 0;
 
@@ -98,6 +107,10 @@ public class ChronoActivity extends RoboActivity {
                         mStatus = ChronoStatus.STARTED;
                         mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
                         mSettingsButton.setVisibility(View.GONE);
+                        mSeekBar.setVisibility(View.GONE);
+
+                        storeSlotTime();
+
                         mTapForNextTextView.setText(R.string.tap_for_first_participant);
                         mScrumTimer.startTimer();
                         break;
@@ -159,12 +172,16 @@ public class ChronoActivity extends RoboActivity {
 
         int timeSlotLength = getSharedPreferences().getInt(TIME_SLOT_LENGTH, -1);
 
+        if (timeSlotLength == -1) {
+            timeSlotLength = SlotSeekBarController.DEFAULT_VALUE;
+        }
         if (mNumberOfParticipants == -1 || timeSlotLength == -1) {
             // Go to settings activity
             startActivity(new Intent(this, SettingsActivity.class));
             return;
         }
         mScrumTimer.setTimeSlotLength(timeSlotLength);
+        mSeekBar.setProgress(timeSlotLength);
     };
 
     /**
@@ -172,6 +189,23 @@ public class ChronoActivity extends RoboActivity {
      */
     SharedPreferences getSharedPreferences() {
         return getSharedPreferences(PREFS_NAME, 0);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        storeSlotTime();
+    }
+
+    private void storeSlotTime() {
+        Editor editor = getSharedPreferences().edit();
+
+        int timeSlotDuration = mSeekBar.getProgress();
+
+        editor.putInt(ChronoActivity.TIME_SLOT_LENGTH, timeSlotDuration);
+        editor.commit();
+
     }
 
     @Override
@@ -276,6 +310,16 @@ public class ChronoActivity extends RoboActivity {
      */
     public void resetBackground() {
         mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
+    }
+
+    /**
+     * This time is called by the seekbar when a new value is set.
+     * 
+     * @param time time in seconds to show.
+     */
+    @Override
+    public void setTime(int time) {
+        mCountDownTextView.setText(mScrumTimer.getPrettyTime(time));
     }
 }
 
