@@ -11,7 +11,7 @@ import java.util.TimerTask;
  * @author jonatantierno
  */
 public class ScrumTimer {
-    private ChronoActivity mActivity = null;
+    private ChronoInterface mActivity = null;
     private long mNumberOfSeconds = 0;
     private long mCountDown = 0;
     private long mCountDownMax = 60;
@@ -76,12 +76,12 @@ public class ScrumTimer {
     }
 
     /**
-     * Setter for the activity. Should be in the constructor, but...
+     * Setter for the Interface. Should be in the constructor, but...
      * 
-     * @param activity main activity.
+     * @param chronoInterface Interface to handle time.
      */
-    public void setActivity(ChronoActivity activity) {
-        mActivity = activity;
+    public void configure(ChronoInterface chronoInterface) {
+        mActivity = chronoInterface;
     }
 
     /**

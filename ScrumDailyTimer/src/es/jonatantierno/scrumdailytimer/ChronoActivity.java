@@ -81,7 +81,7 @@ public class ChronoActivity extends RoboActivity implements ChronoInterface {
 
         setContentView(R.layout.activity_fullscreen);
 
-        mScrumTimer.setActivity(this);
+        mScrumTimer.configure(this);
 
         mSeekBarController.configure(mSeekBar, this);
 

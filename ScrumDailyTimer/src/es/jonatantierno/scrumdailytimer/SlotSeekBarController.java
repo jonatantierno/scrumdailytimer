@@ -32,7 +32,7 @@ public class SlotSeekBarController {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mSeekBar.setProgress(getClosestSlot(mSeekBar.getProgress()));
+                notifyProgress(mSeekBar.getProgress());
             }
 
             @Override
@@ -43,11 +43,15 @@ public class SlotSeekBarController {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int closest = getClosestSlot(progress);
-                mSeekBar.setProgress(closest);
-                mChronoInterface.setTime(closest);
+                notifyProgress(progress);
             }
         };
+    }
+
+    private void notifyProgress(int progress) {
+        int closest = getClosestSlot(progress);
+        mSeekBar.setProgress(closest);
+        mChronoInterface.setTime(closest);
     }
 
     /**

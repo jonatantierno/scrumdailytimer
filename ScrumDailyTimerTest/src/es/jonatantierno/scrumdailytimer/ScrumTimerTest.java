@@ -27,7 +27,7 @@ public class ScrumTimerTest {
         mockActivity = mock(ChronoActivity.class);
 
         out = new ScrumTimer();
-        out.setActivity(mockActivity);
+        out.configure(mockActivity);
         out.setTimeSlotLength(60);
     }
 
