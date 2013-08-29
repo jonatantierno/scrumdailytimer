@@ -3,6 +3,7 @@ package es.jonatantierno.scrumdailytimer;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectView;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,14 +30,27 @@ public class MainActivity extends RoboFragmentActivity {
     ChronoFragment mChronoFragment;
     ResultsFragment mResultsFragment;
 
+    boolean isShowingResults = false;
+
     public MainActivity() {
         mPagerListener = new ViewPager.OnPageChangeListener() {
 
             @Override
-            public void onPageSelected(int arg0) {
-                mScrumTimer.stopCountDown();
-
-                mResultsFragment.displayData(mChronoFragment);
+            public void onPageSelected(int i) {
+                // Results
+                if (i == 1) {
+                    isShowingResults = true;
+                    mScrumTimer.stopCountDown();
+                    mChronoFragment.storeSlotTime();
+                    mResultsFragment.displayData(mChronoFragment);
+                    mScrumTimer.configure(mResultsFragment);
+                } else {
+                    isShowingResults = false;
+                    // i == 0. Restart for the next daily.
+                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    overridePendingTransition(R.anim.none, R.anim.none);
+                    finish();
+                }
             }
 
             @Override
@@ -84,4 +98,14 @@ public class MainActivity extends RoboFragmentActivity {
         return mPagerListener;
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isShowingResults) {
+            mPager.beginFakeDrag();
+            mPager.fakeDragBy(mChronoFragment.getView().getWidth());
+            mPager.endFakeDrag();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

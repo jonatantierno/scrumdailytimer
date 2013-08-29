@@ -12,7 +12,6 @@ import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -26,7 +25,6 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     public static final String TIMEOUTS = "TIMEOUTS";
     public static final String WARMUP_TIME = "WARMUP_TIME";
     public static final String PREFS_NAME = "CHRONO_PREFERENCES";
-    public static final String NUMBER_OF_PARTICIPANTS = "NUMBER_OF_PARTICIPANTS";
     public static final String TIME_SLOT_LENGTH = "TIME_SLOT_LENGTH";
 
     @InjectView(R.id.wholeLayout)
@@ -40,9 +38,6 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     @InjectView(R.id.tapForNextTextView)
     private TextView mTapForNextTextView;
 
-    // Remove when ChronoActivity is gone
-    @InjectView(R.id.settingsButton)
-    private ImageButton mSettingsButton;
     @InjectView(R.id.seekBar1)
     private SeekBar mSeekBar;
 
@@ -65,9 +60,6 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private Vibrator mVibrator;
 
     private void start() {
-
-        // Remove when chronoactivity is removed
-        mSettingsButton.setVisibility(View.GONE);
 
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -248,12 +240,12 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         mParticipantTextView.setText(sb.toString());
     }
 
-    private void storeSlotTime() {
+    void storeSlotTime() {
         Editor editor = getSharedPreferences().edit();
 
         int timeSlotDuration = mSeekBar.getProgress();
 
-        editor.putInt(ChronoActivity.TIME_SLOT_LENGTH, timeSlotDuration);
+        editor.putInt(ChronoFragment.TIME_SLOT_LENGTH, timeSlotDuration);
         editor.commit();
 
     }
@@ -283,4 +275,12 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     public int getNumberOfTimeouts() {
         return mNumberOfTimeouts;
     }
+
+    public String getPreparationTime() {
+        return mWarmUpTime;
+    }
+}
+
+enum ChronoStatus {
+    NOT_STARTED, STARTED, COUNTDOWN, LAST_COUNTDOWN, END;
 }

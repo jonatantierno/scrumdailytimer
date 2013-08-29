@@ -14,11 +14,20 @@ import com.google.inject.Inject;
 /**
  * Results screen.
  */
-public class ResultsFragment extends RoboFragment {
+public class ResultsFragment extends RoboFragment implements ChronoInterface {
 
     @InjectView(R.id.numberOfParticipantsReportDataTextView)
     private TextView mNumberOfParticipantsTextView;
+    @InjectView(R.id.timeOutsDataTextView)
     private TextView mNumberOfTimeoutsTextView;
+    @InjectView(R.id.totalTimeDataTextView)
+    private TextView mTotalTimeDataTextView;
+    @InjectView(R.id.warmUpTimeDataTextView)
+    private TextView mPreparationTimeTextView;
+    @InjectView(R.id.wholeReportLayout)
+    private View mWholeLayout;
+    @InjectView(R.id.tapToFinishDaily)
+    private TextView mTapToFinishTextView;
 
     @Inject
     ScrumTimer mScrumTimer;
@@ -28,6 +37,20 @@ public class ResultsFragment extends RoboFragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.activity_report, container, false);
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mWholeLayout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mScrumTimer.stopTimer();
+                mTapToFinishTextView.setVisibility(View.GONE);
+            }
+        });
     }
 
     /**
@@ -42,9 +65,39 @@ public class ResultsFragment extends RoboFragment {
             public void run() {
                 mNumberOfParticipantsTextView.setText("" + mChronoFragment.getNumberOfParticipants());
                 mNumberOfTimeoutsTextView.setText("" + mChronoFragment.getNumberOfTimeouts());
+                mPreparationTimeTextView.setText("" + mChronoFragment.getPreparationTime());
 
             }
         });
 
+    }
+
+    @Override
+    public void setTime(int i) {
+        // Countdown timer. Do nothing.
+
+    }
+
+    @Override
+    public void setDailyTimer(final String prettyTime) {
+        // Total meeting time. Update.
+        getActivity().runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                mTotalTimeDataTextView.setText(prettyTime);
+            }
+        });
+
+    }
+
+    @Override
+    public void timeOut() {
+        // Countdown timer. Do nothing.
+    }
+
+    @Override
+    public void setCountDown(String prettyTime) {
+        // Countdown timer. Do nothing.
     }
 }

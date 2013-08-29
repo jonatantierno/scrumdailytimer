@@ -1,12 +1,17 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/wholeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChronoActivity" >
+
+
+<LinearLayout 
+    android:id="@+id/wholeReportLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    android:scrollbars="vertical"
-    tools:context=".ChronoActivity" >
+    android:scrollbars="vertical" >
 
     <TextView
         android:id="@+id/titleTextView"
@@ -119,3 +124,13 @@
      </LinearLayout>
 
 </LinearLayout>
+
+    <TextView
+                android:id="@+id/tapToFinishDaily"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_margin="10dp"
+                android:text="@string/tap_to_finish_daily"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+</FrameLayout>

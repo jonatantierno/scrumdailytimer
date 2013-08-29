@@ -6,6 +6,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,10 @@ public class MainActivityTest {
 
     TextView mTapForNextTextView;
     View mWholeView;
+    View mWholeReportView;
     TextView mNumberOfParticipantsTextView;
+    TextView mTimeTextView;
+    TextView mTapToFinish;
 
     public class TestModule extends AbstractModule {
 
@@ -58,6 +62,7 @@ public class MainActivityTest {
                 Modules.override(RoboGuice.newDefaultRoboModule(Robolectric.application)).with(new TestModule()));
 
         out = Robolectric.buildActivity(MainActivity.class).create().start().resume().get();
+        shadowOut = Robolectric.shadowOf(out);
 
         mPagerListener = out.getPagerListener();
 
@@ -68,7 +73,10 @@ public class MainActivityTest {
 
         mTapForNextTextView = (TextView) out.findViewById(R.id.tapForNextTextView);
         mWholeView = out.findViewById(R.id.wholeLayout);
+        mWholeReportView = out.findViewById(R.id.wholeReportLayout);
         mNumberOfParticipantsTextView = (TextView) out.findViewById(R.id.numberOfParticipantsReportDataTextView);
+        mTimeTextView = (TextView) out.findViewById(R.id.totalTimeDataTextView);
+        mTapToFinish = (TextView) out.findViewById(R.id.tapToFinishDaily);
 
     }
 
@@ -113,5 +121,65 @@ public class MainActivityTest {
         mPagerListener.onPageSelected(1);
 
         assertEquals("1", mNumberOfParticipantsTextView.getText());
+    }
+
+    /**
+     * Time continues to pass
+     */
+    @Test
+    public void whenResultScreenThentimeShouldAdvance() {
+        verify(mockTimer).configure(mChronoFragment);
+
+        mPagerListener.onPageSelected(1);
+
+        verify(mockTimer).configure(mResultsFragment);
+
+        when(mockTimer.getPrettyTime()).thenReturn("00:00").thenReturn("00:01");
+
+        mResultsFragment.setDailyTimer("00:00");
+
+        assertEquals("00:00", mTimeTextView.getText());
+
+        mResultsFragment.setDailyTimer("00:01");
+
+        assertEquals("00:01", mTimeTextView.getText());
+    }
+
+    /**
+     * When click on result screen, stop time.
+     */
+    @Test
+    public void whenClickOnResultScreenShouldStopTimer() {
+        mPagerListener.onPageSelected(1);
+        assertEquals(View.VISIBLE, mTapToFinish.getVisibility());
+
+        mWholeReportView.performClick();
+
+        verify(mockTimer).stopTimer();
+        assertEquals(View.GONE, mTapToFinish.getVisibility());
+    }
+
+    /**
+     * when back to first result, restart for next meeting.
+     */
+    @Test
+    public void whenBackToChronoThenRestart() {
+        mPagerListener.onPageSelected(1);
+
+        // Back
+        mPagerListener.onPageSelected(0);
+
+        assertTrue(out.isFinishing());
+        assertEquals(MainActivity.class.getName(), shadowOut.getNextStartedActivity().getComponent().getClassName());
+    }
+
+    /**
+     * When back pressed in result then back to chrono
+     */
+    @Test
+    public void onBackInResultsThenToChrono() {
+        out.onBackPressed();
+
+        assertTrue(out.isFinishing());
     }
 }

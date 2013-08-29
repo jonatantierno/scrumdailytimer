@@ -80,8 +80,7 @@ public class ChronoFragmentTest {
         mockPreferences = Mockito.mock(SharedPreferences.class);
 
         when(mockPreferences.edit()).thenReturn(mockEditor);
-        when(mockPreferences.getInt(ChronoActivity.NUMBER_OF_PARTICIPANTS, -1)).thenReturn(5);
-        when(mockPreferences.getInt(ChronoActivity.TIME_SLOT_LENGTH, -1)).thenReturn(60);
+        when(mockPreferences.getInt(ChronoFragment.TIME_SLOT_LENGTH, -1)).thenReturn(60);
 
         out = new ChronoFragment() {
             @Override
@@ -141,7 +140,7 @@ public class ChronoFragmentTest {
 
         // Test
 
-        assertEquals("Participant 1", mParticipantTextView.getText().toString());
+        assertEquals("Participant:1", mParticipantTextView.getText().toString());
         assertEquals(View.VISIBLE, mParticipantTextView.getVisibility());
         assertEquals(out.getString(R.string.tap_for_next), mTapForNextTextView.getText().toString());
     }
@@ -159,7 +158,7 @@ public class ChronoFragmentTest {
         wholeLayout.performClick();
 
         out.setDailyTimer("01:00");
-        assertEquals("Total meeting time: 01:00", mTotalTimeTextView.getText().toString());
+        assertEquals("Total meeting time:01:00", mTotalTimeTextView.getText().toString());
 
         out.setCountDown("12:34");
         assertEquals("12:34", mCountDownTextView.getText().toString());
@@ -178,7 +177,7 @@ public class ChronoFragmentTest {
         // Start first participant 1
         wholeLayout.performClick();
 
-        assertEquals("Participant 1", mParticipantTextView.getText().toString());
+        assertEquals("Participant:1", mParticipantTextView.getText().toString());
 
         out.timeOut();
 
@@ -197,7 +196,7 @@ public class ChronoFragmentTest {
         // Start first participant
         wholeLayout.performClick();
 
-        assertEquals("Participant 1", mParticipantTextView.getText().toString());
+        assertEquals("Participant:1", mParticipantTextView.getText().toString());
 
         out.timeOut();
 
@@ -214,7 +213,7 @@ public class ChronoFragmentTest {
      */
     @Test
     public void shouldObtainParametersFromSettings() {
-        verify(mockPreferences).getInt(ChronoActivity.TIME_SLOT_LENGTH, -1);
+        verify(mockPreferences).getInt(ChronoFragment.TIME_SLOT_LENGTH, -1);
         verify(mockTimer).setTimeSlotLength(60);
 
         assertEquals(60, mSeekBar.getProgress());
@@ -226,7 +225,7 @@ public class ChronoFragmentTest {
     @Test
     public void whenTimeSlotLengthNotSetThenDefaultValue() {
         // Fixture
-        when(mockPreferences.getInt(ChronoActivity.TIME_SLOT_LENGTH, -1)).thenReturn(-1);
+        when(mockPreferences.getInt(ChronoFragment.TIME_SLOT_LENGTH, -1)).thenReturn(-1);
 
         // Execute
         out.onResume();
@@ -290,7 +289,7 @@ public class ChronoFragmentTest {
 
         out.onStop();
 
-        verify(mockEditor).putInt(ChronoActivity.TIME_SLOT_LENGTH, 90);
+        verify(mockEditor).putInt(ChronoFragment.TIME_SLOT_LENGTH, 90);
         verify(mockEditor).commit();
     }
 
@@ -305,7 +304,7 @@ public class ChronoFragmentTest {
         wholeLayout.performClick();
 
         verify(mockTimer).setTimeSlotLength(90);
-        verify(mockEditor).putInt(ChronoActivity.TIME_SLOT_LENGTH, 90);
+        verify(mockEditor).putInt(ChronoFragment.TIME_SLOT_LENGTH, 90);
         verify(mockEditor).commit();
     }
 }
