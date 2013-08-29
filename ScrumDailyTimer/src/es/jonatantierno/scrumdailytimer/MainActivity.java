@@ -4,9 +4,13 @@ package es.jonatantierno.scrumdailytimer;
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectView;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.WindowManager;
+
+import com.google.inject.Inject;
 
 /**
  * Main Activity containing a view pager.
@@ -16,6 +20,37 @@ public class MainActivity extends RoboFragmentActivity {
 
     @InjectView(R.id.pager)
     ViewPager mPager;
+
+    @Inject
+    ScrumTimer mScrumTimer;
+
+    final ViewPager.OnPageChangeListener mPagerListener;
+
+    ChronoFragment mChronoFragment;
+    ResultsFragment mResultsFragment;
+
+    public MainActivity() {
+        mPagerListener = new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int arg0) {
+                mScrumTimer.stopCountDown();
+
+                mResultsFragment.displayData(mChronoFragment);
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                // Nothing to do
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+                // Nothing to do
+
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +62,26 @@ public class MainActivity extends RoboFragmentActivity {
 
         setContentView(R.layout.activity_main);
 
-        mPager.setAdapter(new ChronoPagerAdapter(getSupportFragmentManager(), this));
+        ChronoPagerAdapter adapter = new ChronoPagerAdapter(getSupportFragmentManager(), this);
+        mChronoFragment = adapter.mChronoFragment;
+        mResultsFragment = adapter.mResultsFragment;
+
+        mPager.setAdapter(adapter);
+        mPager.setOnPageChangeListener(mPagerListener);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mPager.setPageTransformer(true, new EndMeetingPageTransformer());
+        }
+
+    }
+
+    /**
+     * For testing.
+     * 
+     * @return listener that receives the page change.
+     */
+    OnPageChangeListener getPagerListener() {
+        return mPagerListener;
     }
 
 }

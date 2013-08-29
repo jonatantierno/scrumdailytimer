@@ -7,10 +7,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-public class ChronoPagerAdapter extends FragmentPagerAdapter {
+class ChronoPagerAdapter extends FragmentPagerAdapter {
 
-    private ChronoFragment mChronoFragment;
-    private ResultsFragment mResultsFragment;
+    ChronoFragment mChronoFragment;
+    ResultsFragment mResultsFragment;
 
     public ChronoPagerAdapter(FragmentManager fm, Context context) {
         super(fm);

@@ -57,7 +57,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
     private MediaPlayer mAlarmPlayer;
 
-    private int mCurrentParticipant = 1;
+    private int mNumberOfParticipants = 1;
     private int mNumberOfTimeouts = 0;
     private String mWarmUpTime = "00:00";
 
@@ -81,7 +81,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
         mSeekBarController.configure(mSeekBar, this);
 
-        mCurrentParticipant = 1;
+        mNumberOfParticipants = 1;
         mNumberOfTimeouts = 0;
 
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +118,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
                         break;
                     case COUNTDOWN:
-                        mCurrentParticipant++;
+                        mNumberOfParticipants++;
                         repaintParticipants();
 
                         mScrumTimer.resetCountDown();
@@ -159,6 +159,10 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         }
         mScrumTimer.setTimeSlotLength(timeSlotLength);
         mSeekBar.setProgress(timeSlotLength);
+    }
+
+    public int getNumberOfParticipants() {
+        return mNumberOfParticipants;
     }
 
     /**
@@ -240,7 +244,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private void repaintParticipants() {
 
         StringBuffer sb = new StringBuffer(getString(R.string.participant));
-        sb.append(mCurrentParticipant);
+        sb.append(mNumberOfParticipants);
         mParticipantTextView.setText(sb.toString());
     }
 
@@ -274,5 +278,9 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         }
 
         storeSlotTime();
+    }
+
+    public int getNumberOfTimeouts() {
+        return mNumberOfTimeouts;
     }
 }

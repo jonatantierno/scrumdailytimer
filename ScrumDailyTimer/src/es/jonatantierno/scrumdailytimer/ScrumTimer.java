@@ -4,14 +4,17 @@ package es.jonatantierno.scrumdailytimer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.inject.Singleton;
+
 /**
  * This class implements a timer, with a precision of seconds, and provides the content for both the total meeting time
  * and the countdown. It uses a {@link java.util.Timer} that will call tick() once every second.
  * 
  * @author jonatantierno
  */
+@Singleton
 public class ScrumTimer {
-    private ChronoInterface mActivity = null;
+    private ChronoInterface mChronoInterface = null;
     private long mNumberOfSeconds = 0;
     private long mCountDown = 0;
     private long mCountDownMax = 60;
@@ -46,7 +49,7 @@ public class ScrumTimer {
 
         mNumberOfSeconds = 0;
 
-        mActivity.setDailyTimer(getPrettyTime(mNumberOfSeconds));
+        mChronoInterface.setDailyTimer(getPrettyTime(mNumberOfSeconds));
 
     }
 
@@ -81,7 +84,7 @@ public class ScrumTimer {
      * @param chronoInterface Interface to handle time.
      */
     public void configure(ChronoInterface chronoInterface) {
-        mActivity = chronoInterface;
+        mChronoInterface = chronoInterface;
     }
 
     /**
@@ -89,16 +92,16 @@ public class ScrumTimer {
      */
     public void tick() {
         mNumberOfSeconds++;
-        mActivity.setDailyTimer(getPrettyTime(mNumberOfSeconds));
+        mChronoInterface.setDailyTimer(getPrettyTime(mNumberOfSeconds));
 
         if (mCountingDown) {
             mCountDown--;
 
             if (mCountDown < 0) {
-                mActivity.timeOut();
+                mChronoInterface.timeOut();
                 stopCountDown();
             } else {
-                mActivity.setCountDown(getPrettyTime(mCountDown));
+                mChronoInterface.setCountDown(getPrettyTime(mCountDown));
             }
         }
     }
