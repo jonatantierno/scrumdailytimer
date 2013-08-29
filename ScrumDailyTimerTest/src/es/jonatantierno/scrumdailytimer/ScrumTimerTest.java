@@ -17,17 +17,17 @@ import org.robolectric.annotation.Config;
 @Config(manifest = "../ScrumDailyTimer/AndroidManifest.xml")
 public class ScrumTimerTest {
 
-    ChronoActivity mockActivity;
+    ChronoInterface mockActivity;
     ScrumTimer out;
 
     @Before
     public void setUp() throws Exception {
 
         // Fixture
-        mockActivity = mock(ChronoActivity.class);
+        mockActivity = mock(ChronoInterface.class);
 
         out = new ScrumTimer();
-        out.setActivity(mockActivity);
+        out.configure(mockActivity);
         out.setTimeSlotLength(60);
     }
 
