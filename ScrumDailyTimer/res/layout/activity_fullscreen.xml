@@ -76,15 +76,17 @@
                 android:text="@string/total_meeting_time"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/swipeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|right"
+                android:layout_marginRight="-120dp"
+                android:text="@string/swipe_to_finish"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
         </FrameLayout>
     </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
-        android:layout_margin="10dp"
-        android:src="@drawable/action_settings" />
 
 </FrameLayout>
