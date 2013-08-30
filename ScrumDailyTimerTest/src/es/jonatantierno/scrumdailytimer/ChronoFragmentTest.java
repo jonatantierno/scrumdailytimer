@@ -41,7 +41,8 @@ public class ChronoFragmentTest {
     ScrumTimer mockTimer;
 
     Provider mockPlayerProvider;
-    MediaPlayer mockPlayer;
+    MediaPlayer mockHornPlayer;
+    MediaPlayer mockTickPlayer;
     View wholeLayout;
     SharedPreferences mockPreferences;
     Editor mockEditor;
@@ -59,10 +60,12 @@ public class ChronoFragmentTest {
         @Override
         protected void configure() {
             mockTimer = Mockito.mock(ScrumTimer.class);
-            mockPlayer = Mockito.mock(MediaPlayer.class);
+            mockHornPlayer = Mockito.mock(MediaPlayer.class);
+            mockTickPlayer = Mockito.mock(MediaPlayer.class);
             mockPlayerProvider = Mockito.mock(Provider.class);
             mockSeekBarController = Mockito.mock(SlotSeekBarController.class);
-            when(mockPlayerProvider.getAlarmPlayer(Mockito.any(Context.class))).thenReturn(mockPlayer);
+            when(mockPlayerProvider.getAlarmPlayer(Mockito.any(Context.class))).thenReturn(mockHornPlayer);
+            when(mockPlayerProvider.getTickPlayer(Mockito.any(Context.class))).thenReturn(mockTickPlayer);
 
             bind(ScrumTimer.class).toInstance(mockTimer);
             bind(Provider.class).toInstance(mockPlayerProvider);
@@ -188,7 +191,8 @@ public class ChronoFragmentTest {
 
         assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
 
-        verify(mockPlayer).start();
+        verify(mockHornPlayer).start();
+        verify(mockTickPlayer).start();
 
     }
 
@@ -209,6 +213,7 @@ public class ChronoFragmentTest {
 
         // Start first participant 2
         wholeLayout.performClick();
+        verify(mockTickPlayer).pause();
 
         assertFalse(0xFFFF0000 == Robolectric.shadowOf(wholeLayout).getBackgroundColor());
     }

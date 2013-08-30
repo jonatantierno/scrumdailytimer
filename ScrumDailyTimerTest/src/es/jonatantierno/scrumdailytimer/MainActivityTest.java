@@ -17,6 +17,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import roboguice.RoboGuice;
+import android.media.MediaPlayer;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -45,14 +46,17 @@ public class MainActivityTest {
     TextView mNumberOfParticipantsTextView;
     TextView mTimeTextView;
     TextView mTapToFinish;
+    MediaPlayer mockPlayer;
 
     public class TestModule extends AbstractModule {
 
         @Override
         protected void configure() {
             mockTimer = mock(ScrumTimer.class);
+            mockPlayer = mock(MediaPlayer.class);
 
             bind(ScrumTimer.class).toInstance(mockTimer);
+            bind(MediaPlayer.class).toInstance(mockPlayer);
         }
     }
 
@@ -97,7 +101,7 @@ public class MainActivityTest {
     }
 
     /**
-     * Changing view (going to result screen) stops countdown timer (prevents sound).
+     * Changing view (going to result screen) stops countdown timer (stops tick).
      */
     @Test
     public void whenResultsScreenSelectedThenStopCountdown() {
@@ -105,9 +109,11 @@ public class MainActivityTest {
         mPagerListener.onPageSelected(1);
 
         verify(mockTimer).stopCountDown();
+        verify(mockPlayer).pause();
 
         assertTrue(mAdapter.getItem(0) instanceof ChronoFragment);
         assertTrue(mAdapter.getItem(1) instanceof ResultsFragment);
+
     }
 
     /**

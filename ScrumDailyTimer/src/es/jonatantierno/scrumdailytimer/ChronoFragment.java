@@ -51,6 +51,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private Provider mProvider;
 
     private MediaPlayer mAlarmPlayer;
+    private MediaPlayer mTickPlayer;
 
     private int mNumberOfParticipants = 1;
     private int mNumberOfTimeouts = 0;
@@ -66,6 +67,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         new Thread() {
             public void run() {
                 mAlarmPlayer = mProvider.getAlarmPlayer(getActivity());
+                mTickPlayer = mProvider.getTickPlayer(getActivity());
             }
         }.start();
 
@@ -77,6 +79,8 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         mNumberOfTimeouts = 0;
 
         mTotalTimeTextView.setVisibility(View.GONE);
+        mSwipeTextView.setVisibility(View.GONE);
+        mTotalTimeTextView.setText("");
 
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
 
@@ -90,6 +94,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
                         mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
                         mSeekBar.setVisibility(View.GONE);
                         mTotalTimeTextView.setVisibility(View.VISIBLE);
+                        mSwipeTextView.setVisibility(View.VISIBLE);
 
                         storeSlotTime();
                         mScrumTimer.setTimeSlotLength(mSeekBar.getProgress());
@@ -113,6 +118,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
                         break;
                     case COUNTDOWN:
+                        mTickPlayer.pause();
                         mNumberOfParticipants++;
                         repaintParticipants();
 
@@ -195,6 +201,9 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         if (mAlarmPlayer != null) {
             mAlarmPlayer.start();
         }
+        if (mTickPlayer != null) {
+            mTickPlayer.start();
+        }
 
         getActivity().runOnUiThread(new Runnable() {
 
@@ -267,6 +276,11 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         super.onStop();
 
         mScrumTimer.stopTimer();
+
+        if (mTickPlayer != null) {
+            mTickPlayer.release();
+            mTickPlayer = null;
+        }
         if (mAlarmPlayer != null) {
             mAlarmPlayer.release();
             mAlarmPlayer = null;
