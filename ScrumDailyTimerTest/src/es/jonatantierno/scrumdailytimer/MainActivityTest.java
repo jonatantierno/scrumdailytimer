@@ -7,12 +7,14 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -96,7 +98,7 @@ public class MainActivityTest {
     public void testShouldAccessViews() {
 
         // Test
-        assertEquals(out.getString(R.string.tap_to_start_daily), mTapForNextTextView.getText().toString());
+        assertEquals(out.getString(R.string.tap_for_first_participant), mTapForNextTextView.getText().toString());
     }
 
     /**
@@ -173,8 +175,9 @@ public class MainActivityTest {
         // Back
         mPagerListener.onPageSelected(0);
 
-        assertTrue(out.isFinishing());
-        assertEquals(MainActivity.class.getName(), shadowOut.getNextStartedActivity().getComponent().getClassName());
+        assertFalse(out.isFinishing());
+        verify(mockTimer).stopTimer();
+        verify(mockTimer, times(3)).configure(Mockito.any(ChronoInterface.class));
     }
 
     /**
