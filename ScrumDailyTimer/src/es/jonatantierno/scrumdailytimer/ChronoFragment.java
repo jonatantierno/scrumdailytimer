@@ -86,6 +86,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
         mNumberOfParticipants = 1;
         mNumberOfTimeouts = 0;
+        mStatus = ChronoStatus.STARTED;
 
         mWholeLayout.setBackgroundResource(R.drawable.background_gradient);
 
@@ -103,6 +104,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
                     case STARTED:
                         // Set time and store
                         storeSlotTime();
+                        mScrumTimer.setTimeSlotLength(mSeekBar.getProgress());
 
                         mWholeLayout.setBackgroundResource(R.drawable.meeting_background_gradient);
                         mSeekBar.setVisibility(View.GONE);
@@ -158,8 +160,6 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     public void onResume() {
         super.onResume();
         // Get settings
-
-        mStatus = ChronoStatus.STARTED;
 
         int timeSlotLength = getSharedPreferences().getInt(TIME_SLOT_LENGTH, -1);
 

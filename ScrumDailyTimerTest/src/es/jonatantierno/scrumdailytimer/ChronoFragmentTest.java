@@ -276,6 +276,20 @@ public class ChronoFragmentTest {
     }
 
     /**
+     * Store value from seekbar when tap
+     */
+    @Test
+    public void whenTapThenStoreValueFromSeekBar() {
+
+        mSeekBar.setProgress(90);
+
+        wholeLayout.performClick();
+
+        verify(mockEditor).putInt(ChronoFragment.TIME_SLOT_LENGTH, 90);
+        verify(mockEditor).commit();
+    }
+
+    /**
      * when start, Store value from seekbar in settings. Also, set countdown
      */
     @Test
