@@ -9,7 +9,7 @@
         android:id="@+id/wholeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background"
+        android:background="@drawable/background_gradient"
         android:clipChildren="false"
         android:orientation="vertical" >
 
@@ -50,7 +50,7 @@
                 android:max="300"
                 android:paddingBottom="20dp"
                 android:paddingTop="20dp"
-                android:progress="0" />
+                android:progress="60" />
 
         </FrameLayout>
 
