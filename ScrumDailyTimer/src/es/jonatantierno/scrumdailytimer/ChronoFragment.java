@@ -37,6 +37,8 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private TextView mTotalTimeTextView;
     @InjectView(R.id.tapForNextTextView)
     private TextView mTapForNextTextView;
+    @InjectView(R.id.swipeTextView)
+    private TextView mSwipeTextView;
 
     @InjectView(R.id.seekBar1)
     private SeekBar mSeekBar;
@@ -174,6 +176,13 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     @Override
     public void setTime(int time) {
         mCountDownTextView.setText(mScrumTimer.getPrettyTime(time));
+    }
+
+    /**
+     * Pause ticking clock sound
+     */
+    public void pauseTickSound() {
+        mTickPlayer.pause();
     }
 
     /**
