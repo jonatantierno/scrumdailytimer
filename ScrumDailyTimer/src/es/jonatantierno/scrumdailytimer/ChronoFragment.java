@@ -187,6 +187,13 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     }
 
     /**
+     * Pause ticking clock sound
+     */
+    public void pauseTickSound() {
+        mTickPlayer.pause();
+    }
+
+    /**
      * Sets time for the total daily meeting timer.
      * 
      * @param string time to show.

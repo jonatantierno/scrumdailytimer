@@ -48,6 +48,7 @@ public class MainActivity extends RoboFragmentActivity {
                 if (i == 1) {
                     mScrumTimer.stopCountDown();
                     mChronoFragment.storeSlotTime();
+                    mChronoFragment.pauseTickSound();
                     mResultsFragment.displayData(mChronoFragment);
                     mScrumTimer.configure(mResultsFragment);
                 } else {
