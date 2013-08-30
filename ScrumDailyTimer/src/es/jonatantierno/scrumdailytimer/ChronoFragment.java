@@ -62,6 +62,11 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private ChronoStatus mStatus = ChronoStatus.NOT_STARTED;
     private Vibrator mVibrator;
 
+    /*
+     * Used to reset back press from main activity.
+     */
+    boolean isBackPressReset = false;
+
     private void start() {
 
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
@@ -82,6 +87,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
         mTotalTimeTextView.setVisibility(View.GONE);
         mSwipeTextView.setVisibility(View.GONE);
+
         mTotalTimeTextView.setText("");
 
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +95,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
             @Override
             public void onClick(View v) {
                 vibrate();
+                isBackPressReset = true;
 
                 switch (mStatus) {
                     case NOT_STARTED:
@@ -97,6 +104,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
                         mSeekBar.setVisibility(View.GONE);
                         mTotalTimeTextView.setVisibility(View.VISIBLE);
                         mSwipeTextView.setVisibility(View.VISIBLE);
+                        mTotalTimeTextView.setText("");
 
                         storeSlotTime();
                         mScrumTimer.setTimeSlotLength(mSeekBar.getProgress());

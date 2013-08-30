@@ -9,7 +9,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.inject.Inject;
 
@@ -30,7 +32,12 @@ public class MainActivity extends RoboFragmentActivity {
     ChronoFragment mChronoFragment;
     ResultsFragment mResultsFragment;
 
-    boolean isShowingResults = false;
+    // Exit when back pressed twice. This resets when the user taps.
+    private boolean mBackPressedOnce = false;
+
+    void resetBackPresses() {
+        mBackPressedOnce = false;
+    }
 
     public MainActivity() {
         mPagerListener = new ViewPager.OnPageChangeListener() {
@@ -39,14 +46,12 @@ public class MainActivity extends RoboFragmentActivity {
             public void onPageSelected(int i) {
                 // Results
                 if (i == 1) {
-                    isShowingResults = true;
                     mScrumTimer.stopCountDown();
                     mChronoFragment.storeSlotTime();
                     mChronoFragment.pauseTickSound();
                     mResultsFragment.displayData(mChronoFragment);
                     mScrumTimer.configure(mResultsFragment);
                 } else {
-                    isShowingResults = false;
                     // i == 0. Restart for the next daily.
                     startActivity(new Intent(MainActivity.this, MainActivity.class));
                     overridePendingTransition(R.anim.none, R.anim.none);
@@ -60,9 +65,19 @@ public class MainActivity extends RoboFragmentActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int arg0) {
-                // Nothing to do
-
+            public void onPageScrollStateChanged(int scrollState) {
+                // Hide totalTimeTextView so that swipe view is seen properly.
+                View totalTimeTextView = MainActivity.this.findViewById(R.id.totalTimeTextView);
+                switch (scrollState) {
+                    case ViewPager.SCROLL_STATE_DRAGGING:
+                        totalTimeTextView.setVisibility(View.GONE);
+                        break;
+                    case ViewPager.SCROLL_STATE_IDLE:
+                        totalTimeTextView.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        break;
+                }
             }
         };
     }
@@ -101,12 +116,18 @@ public class MainActivity extends RoboFragmentActivity {
 
     @Override
     public void onBackPressed() {
-        if (isShowingResults) {
-            mPager.beginFakeDrag();
-            mPager.fakeDragBy(mChronoFragment.getView().getWidth());
-            mPager.endFakeDrag();
-        } else {
+        if (mChronoFragment.isBackPressReset) {
+            mChronoFragment.isBackPressReset = false;
+            mBackPressedOnce = false;
+        }
+
+        if (mBackPressedOnce) {
             super.onBackPressed();
+        } else {
+            mBackPressedOnce = true;
+
+            Toast toast = Toast.makeText(this, R.string.press_back_again, Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 }
