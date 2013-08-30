@@ -2,7 +2,9 @@
 package es.jonatantierno.scrumdailytimer;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -15,6 +17,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowToast;
 
 import roboguice.RoboGuice;
 import android.media.MediaPlayer;
@@ -180,12 +183,48 @@ public class MainActivityTest {
     }
 
     /**
-     * When back pressed in result then back to chrono
+     * When two back presses in then exit.
      */
     @Test
-    public void onBackInResultsThenToChrono() {
+    public void whenTwoBackPressesThenExit() {
+        out.onBackPressed();
+
+        assertEquals(out.getString(R.string.press_back_again), ShadowToast.getTextOfLatestToast());
+        assertFalse(out.isFinishing());
+
         out.onBackPressed();
 
         assertTrue(out.isFinishing());
+    }
+
+    /**
+     * When two back presses in then exit, also in results.
+     */
+    @Test
+    public void whenTwoBackPressesInResultsThenExit() {
+        mPagerListener.onPageSelected(1);
+        out.onBackPressed();
+
+        assertEquals(out.getString(R.string.press_back_again), ShadowToast.getTextOfLatestToast());
+        assertFalse(out.isFinishing());
+
+        out.onBackPressed();
+
+        assertTrue(out.isFinishing());
+        assertNull(shadowOut.getNextStartedActivity());
+    }
+
+    /**
+     * Back press reset with any tap.
+     */
+    @Test
+    public void whenTapThenBackPressIsReset() {
+        out.onBackPressed();
+
+        out.resetBackPresses();
+
+        out.onBackPressed();
+
+        assertFalse(out.isFinishing());
     }
 }

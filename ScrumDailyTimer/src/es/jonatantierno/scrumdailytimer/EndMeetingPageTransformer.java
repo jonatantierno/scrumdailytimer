@@ -23,6 +23,7 @@ public class EndMeetingPageTransformer implements PageTransformer {
             if (swipeView != null) {
                 swipeView.setAlpha(1);
                 swipeView.setTranslationX((int) (1.2 * position * pageWidth));
+                swipeView.setTranslationY((int) (1.4 * position * pageWidth));
             }
         } else {
 

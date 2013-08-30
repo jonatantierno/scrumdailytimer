@@ -53,6 +53,7 @@ public class ChronoFragmentTest {
     TextView mTapForNextTextView;
     TextView mCountDownTextView;
     TextView mTotalTimeTextView;
+    TextView mSwipeTextView;
     SeekBar mSeekBar;
 
     public class TestModule extends AbstractModule {
@@ -106,6 +107,7 @@ public class ChronoFragmentTest {
         mTapForNextTextView = (TextView) out.getView().findViewById(R.id.tapForNextTextView);
         mCountDownTextView = (TextView) out.getView().findViewById(R.id.countDownTextView);
         mTotalTimeTextView = (TextView) out.getView().findViewById(R.id.totalTimeTextView);
+        mSwipeTextView = (TextView) out.getView().findViewById(R.id.swipeTextView);
         mSeekBar = (SeekBar) out.getView().findViewById(R.id.seekBar1);
     }
 
@@ -155,10 +157,12 @@ public class ChronoFragmentTest {
     public void shouldDisplayTime() {
         // Execute.
         assertEquals(View.GONE, mTotalTimeTextView.getVisibility());
+        assertEquals(View.GONE, mSwipeTextView.getVisibility());
         // Start timer
         wholeLayout.performClick();
 
         assertEquals(View.VISIBLE, mTotalTimeTextView.getVisibility());
+        assertEquals(View.VISIBLE, mSwipeTextView.getVisibility());
         out.setDailyTimer("00:00");
         assertEquals("Total meeting time:00:00", mTotalTimeTextView.getText().toString());
 
