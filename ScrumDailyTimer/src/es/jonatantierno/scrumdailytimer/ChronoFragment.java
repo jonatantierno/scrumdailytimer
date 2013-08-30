@@ -190,7 +190,9 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
      * Pause ticking clock sound
      */
     public void pauseTickSound() {
-        mTickPlayer.pause();
+        if (mTickPlayer.isPlaying()) {
+            mTickPlayer.pause();
+        }
     }
 
     /**
