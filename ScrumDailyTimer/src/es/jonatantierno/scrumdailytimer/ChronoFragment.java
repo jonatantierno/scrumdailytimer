@@ -76,6 +76,8 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         mNumberOfParticipants = 1;
         mNumberOfTimeouts = 0;
 
+        mTotalTimeTextView.setVisibility(View.GONE);
+
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -87,6 +89,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
                         mStatus = ChronoStatus.STARTED;
                         mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
                         mSeekBar.setVisibility(View.GONE);
+                        mTotalTimeTextView.setVisibility(View.VISIBLE);
 
                         storeSlotTime();
                         mScrumTimer.setTimeSlotLength(mSeekBar.getProgress());

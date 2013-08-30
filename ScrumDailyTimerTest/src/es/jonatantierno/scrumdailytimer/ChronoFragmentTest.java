@@ -151,8 +151,13 @@ public class ChronoFragmentTest {
     @Test
     public void shouldDisplayTime() {
         // Execute.
+        assertEquals(View.GONE, mTotalTimeTextView.getVisibility());
         // Start timer
         wholeLayout.performClick();
+
+        assertEquals(View.VISIBLE, mTotalTimeTextView.getVisibility());
+        out.setDailyTimer("00:00");
+        assertEquals("Total meeting time:00:00", mTotalTimeTextView.getText().toString());
 
         // Start first participant 1/5
         wholeLayout.performClick();
