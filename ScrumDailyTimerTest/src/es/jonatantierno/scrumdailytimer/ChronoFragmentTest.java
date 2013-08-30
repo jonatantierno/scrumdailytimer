@@ -193,8 +193,6 @@ public class ChronoFragmentTest {
 
         out.timeOut();
 
-        assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
-
         verify(mockHornPlayer).start();
         verify(mockTickPlayer).start();
 
@@ -212,8 +210,6 @@ public class ChronoFragmentTest {
         assertEquals("Participant:1", mParticipantTextView.getText().toString());
 
         out.timeOut();
-
-        assertEquals(0xFFFF0000, Robolectric.shadowOf(wholeLayout).getBackgroundColor());
 
         // Start first participant 2
         wholeLayout.performClick();
@@ -245,20 +241,6 @@ public class ChronoFragmentTest {
         out.onResume();
 
         assertEquals(SlotSeekBarController.DEFAULT_VALUE, mSeekBar.getProgress());
-    }
-
-    @Test
-    public void shouldChangeColorDuringMeeting() {
-
-        assertEquals(out.getResources().getColor(R.color.background), Robolectric.shadowOf(wholeLayout)
-                .getBackgroundColor());
-
-        // Start meeting
-        wholeLayout.performClick();
-
-        assertEquals(out.getResources().getColor(R.color.meeting_background), Robolectric.shadowOf(wholeLayout)
-                .getBackgroundColor());
-
     }
 
     /**

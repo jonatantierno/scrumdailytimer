@@ -100,7 +100,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
                 switch (mStatus) {
                     case NOT_STARTED:
                         mStatus = ChronoStatus.STARTED;
-                        mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
+                        mWholeLayout.setBackgroundResource(R.drawable.meeting_background_gradient);
                         mSeekBar.setVisibility(View.GONE);
                         mTotalTimeTextView.setVisibility(View.VISIBLE);
                         mSwipeTextView.setVisibility(View.VISIBLE);
@@ -228,7 +228,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
             @Override
             public void run() {
-                mWholeLayout.setBackgroundColor(getResources().getColor(R.color.timeout_background));
+                mWholeLayout.setBackgroundResource(R.drawable.timeout_background_gradient);
             }
         });
 
@@ -250,7 +250,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
      * Set normal background
      */
     public void resetBackground() {
-        mWholeLayout.setBackgroundColor(getResources().getColor(R.color.meeting_background));
+        mWholeLayout.setBackgroundResource(R.drawable.meeting_background_gradient);
     }
 
     /**
