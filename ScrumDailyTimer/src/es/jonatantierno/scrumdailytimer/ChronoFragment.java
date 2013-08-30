@@ -37,8 +37,6 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private TextView mTotalTimeTextView;
     @InjectView(R.id.tapForNextTextView)
     private TextView mTapForNextTextView;
-    @InjectView(R.id.swipeTextView)
-    private TextView mSwipeTextView;
 
     @InjectView(R.id.seekBar1)
     private SeekBar mSeekBar;
@@ -59,7 +57,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private int mNumberOfTimeouts = 0;
     private String mWarmUpTime = "00:00";
 
-    private ChronoStatus mStatus = ChronoStatus.NOT_STARTED;
+    private ChronoStatus mStatus = ChronoStatus.STARTED;
     private Vibrator mVibrator;
 
     /*
@@ -74,6 +72,10 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         new Thread() {
             public void run() {
                 mAlarmPlayer = mProvider.getAlarmPlayer(getActivity());
+            }
+        }.start();
+        new Thread() {
+            public void run() {
                 mTickPlayer = mProvider.getTickPlayer(getActivity());
             }
         }.start();
@@ -85,10 +87,10 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         mNumberOfParticipants = 1;
         mNumberOfTimeouts = 0;
 
-        mTotalTimeTextView.setVisibility(View.GONE);
-        mSwipeTextView.setVisibility(View.GONE);
+        mWholeLayout.setBackgroundResource(R.drawable.background_gradient);
 
-        mTotalTimeTextView.setText("");
+        mTapForNextTextView.setText(R.string.tap_for_first_participant);
+        mScrumTimer.startTimer();
 
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
 
@@ -98,21 +100,13 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
                 isBackPressReset = true;
 
                 switch (mStatus) {
-                    case NOT_STARTED:
-                        mStatus = ChronoStatus.STARTED;
+                    case STARTED:
+                        // Set time and store
+                        storeSlotTime();
+
                         mWholeLayout.setBackgroundResource(R.drawable.meeting_background_gradient);
                         mSeekBar.setVisibility(View.GONE);
-                        mTotalTimeTextView.setVisibility(View.VISIBLE);
-                        mSwipeTextView.setVisibility(View.VISIBLE);
-                        mTotalTimeTextView.setText("");
 
-                        storeSlotTime();
-                        mScrumTimer.setTimeSlotLength(mSeekBar.getProgress());
-
-                        mTapForNextTextView.setText(R.string.tap_for_first_participant);
-                        mScrumTimer.startTimer();
-                        break;
-                    case STARTED:
                         mStatus = ChronoStatus.COUNTDOWN;
 
                         mWarmUpTime = mScrumTimer.getPrettyTime();
@@ -128,7 +122,9 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 
                         break;
                     case COUNTDOWN:
-                        mTickPlayer.pause();
+                        if (mTickPlayer.isPlaying()) {
+                            mTickPlayer.pause();
+                        }
                         mNumberOfParticipants++;
                         repaintParticipants();
 
@@ -163,13 +159,18 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         super.onResume();
         // Get settings
 
+        mStatus = ChronoStatus.STARTED;
+
         int timeSlotLength = getSharedPreferences().getInt(TIME_SLOT_LENGTH, -1);
 
         if (timeSlotLength == -1) {
             timeSlotLength = SlotSeekBarController.DEFAULT_VALUE;
         }
         mScrumTimer.setTimeSlotLength(timeSlotLength);
+        mSeekBar.setVisibility(View.VISIBLE);
+        mParticipantTextView.setVisibility(View.GONE);
         mSeekBar.setProgress(timeSlotLength);
+        setTime(timeSlotLength);
     }
 
     public int getNumberOfParticipants() {
@@ -318,5 +319,5 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
 }
 
 enum ChronoStatus {
-    NOT_STARTED, STARTED, COUNTDOWN, LAST_COUNTDOWN, END;
+    STARTED, COUNTDOWN, LAST_COUNTDOWN, END;
 }

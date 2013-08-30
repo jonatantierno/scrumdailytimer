@@ -3,7 +3,6 @@ package es.jonatantierno.scrumdailytimer;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectView;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,9 +52,10 @@ public class MainActivity extends RoboFragmentActivity {
                     mScrumTimer.configure(mResultsFragment);
                 } else {
                     // i == 0. Restart for the next daily.
-                    startActivity(new Intent(MainActivity.this, MainActivity.class));
-                    overridePendingTransition(R.anim.none, R.anim.none);
-                    finish();
+
+                    mChronoFragment.onStop();
+                    mChronoFragment.onStart();
+                    mChronoFragment.onResume();
                 }
             }
 

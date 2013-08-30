@@ -53,7 +53,6 @@ public class ChronoFragmentTest {
     TextView mTapForNextTextView;
     TextView mCountDownTextView;
     TextView mTotalTimeTextView;
-    TextView mSwipeTextView;
     SeekBar mSeekBar;
 
     public class TestModule extends AbstractModule {
@@ -107,7 +106,6 @@ public class ChronoFragmentTest {
         mTapForNextTextView = (TextView) out.getView().findViewById(R.id.tapForNextTextView);
         mCountDownTextView = (TextView) out.getView().findViewById(R.id.countDownTextView);
         mTotalTimeTextView = (TextView) out.getView().findViewById(R.id.totalTimeTextView);
-        mSwipeTextView = (TextView) out.getView().findViewById(R.id.swipeTextView);
         mSeekBar = (SeekBar) out.getView().findViewById(R.id.seekBar1);
     }
 
@@ -117,15 +115,8 @@ public class ChronoFragmentTest {
     }
 
     @Test
-    public void whenTapShouldStartTimer() {
+    public void onStartShouldStartTimer() {
         verify(mockTimer).configure(out);
-
-        // Test
-        assertEquals(out.getString(R.string.tap_to_start_daily), mTapForNextTextView.getText().toString());
-        assertEquals(View.GONE, mParticipantTextView.getVisibility());
-
-        // Execute.
-        wholeLayout.performClick();
 
         // Test
         verify(mockTimer).startTimer();
@@ -138,7 +129,6 @@ public class ChronoFragmentTest {
 
         // Execute.
         // Start timer
-        wholeLayout.performClick();
 
         // Start first countdown
         wholeLayout.performClick();
@@ -156,13 +146,7 @@ public class ChronoFragmentTest {
     @Test
     public void shouldDisplayTime() {
         // Execute.
-        assertEquals(View.GONE, mTotalTimeTextView.getVisibility());
-        assertEquals(View.GONE, mSwipeTextView.getVisibility());
         // Start timer
-        wholeLayout.performClick();
-
-        assertEquals(View.VISIBLE, mTotalTimeTextView.getVisibility());
-        assertEquals(View.VISIBLE, mSwipeTextView.getVisibility());
         out.setDailyTimer("00:00");
         assertEquals("Total meeting time:00:00", mTotalTimeTextView.getText().toString());
 
@@ -184,7 +168,6 @@ public class ChronoFragmentTest {
     public void whenCountDownOverThenAlarm() {
         // Execute.
         // Start timer
-        wholeLayout.performClick();
 
         // Start first participant 1
         wholeLayout.performClick();
@@ -201,8 +184,8 @@ public class ChronoFragmentTest {
     @Test
     public void whenResetCountDownThenUndoTimeout() {
         // Execute.
+        when(mockTickPlayer.isPlaying()).thenReturn(true);
         // Start timer
-        wholeLayout.performClick();
 
         // Start first participant
         wholeLayout.performClick();
@@ -213,6 +196,7 @@ public class ChronoFragmentTest {
 
         // Start first participant 2
         wholeLayout.performClick();
+        verify(mockTickPlayer).isPlaying();
         verify(mockTickPlayer).pause();
 
         assertFalse(0xFFFF0000 == Robolectric.shadowOf(wholeLayout).getBackgroundColor());
@@ -236,18 +220,20 @@ public class ChronoFragmentTest {
     public void whenTimeSlotLengthNotSetThenDefaultValue() {
         // Fixture
         when(mockPreferences.getInt(ChronoFragment.TIME_SLOT_LENGTH, -1)).thenReturn(-1);
+        when(mockTimer.getPrettyTime(60)).thenReturn("01:00");
 
         // Execute
         out.onResume();
 
         assertEquals(SlotSeekBarController.DEFAULT_VALUE, mSeekBar.getProgress());
+        assertEquals("01:00", mCountDownTextView.getText());
     }
 
     /**
      * Hide SeekBar when meeting starts.
      */
     @Test
-    public void whenStartMeetingSeekBarShoulDissapear() {
+    public void whenFirstParticipantThenSeekBarShoulDissapear() {
         assertEquals(View.VISIBLE, mSeekBar.getVisibility());
 
         wholeLayout.performClick();
@@ -299,7 +285,6 @@ public class ChronoFragmentTest {
 
         wholeLayout.performClick();
 
-        verify(mockTimer).setTimeSlotLength(90);
         verify(mockEditor).putInt(ChronoFragment.TIME_SLOT_LENGTH, 90);
         verify(mockEditor).commit();
     }

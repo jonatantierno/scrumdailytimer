@@ -3,7 +3,6 @@ package es.jonatantierno.scrumdailytimer;
 
 import android.support.v4.view.ViewPager.PageTransformer;
 import android.view.View;
-import android.widget.TextView;
 
 public class EndMeetingPageTransformer implements PageTransformer {
 
@@ -18,13 +17,6 @@ public class EndMeetingPageTransformer implements PageTransformer {
             view.setScaleX(1 / (1 + position));
             view.setScaleY(1 / (1 + position));
 
-            // Chrono Fragment. Highlight swipe tip
-            TextView swipeView = (TextView) view.findViewById(R.id.swipeTextView);
-            if (swipeView != null) {
-                swipeView.setAlpha(1);
-                swipeView.setTranslationX((int) (1.2 * position * pageWidth));
-                swipeView.setTranslationY((int) (1.4 * position * pageWidth));
-            }
         } else {
 
             view.setAlpha(1);

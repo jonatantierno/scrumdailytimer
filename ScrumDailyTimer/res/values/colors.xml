@@ -1,12 +1,15 @@
 <resources>
 
     <color name="black_overlay">#66000000</color>
-    <color name="background">#0099cc</color>
-    <color name="background_2">#343434</color>
+    <color name="background">#151515</color>
+    <color name="background_2">#404040</color>
     <color name="pager_background">#000000</color>
     <color name="pause_background">#FFFF00</color>
+    <color name="pause_background_2">#FFFF00</color>
     <color name="text_color">#AAffffff</color>
-    <color name="timeout_background">#FFFF0000</color>
-    <color name="meeting_background">#008866</color>
+    <color name="timeout_background">#CD2200</color>
+    <color name="timeout_background_2">#CD5200</color>
+    <color name="meeting_background">#00CD29</color>
+    <color name="meeting_background_2">#007BCD</color>
 
 </resources>
