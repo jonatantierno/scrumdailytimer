@@ -6,6 +6,8 @@ If you just want to use it and don't care about the code, you can download it di
 
 https://play.google.com/store/apps/details?id=es.jonatantierno.scrumdailytimer
 
+The code uses <a href="http://pivotal.github.io/robolectric/">Robolectric</a> for unit tests and <a href="https://github.com/roboguice/roboguice"> for dependency injection.
+
 The sounds used in the app were obtained from:
 
 <ul>
