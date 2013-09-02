@@ -105,6 +105,12 @@ public class MainActivity extends RoboFragmentActivity {
 
     }
 
+    protected void onResume() {
+        super.onResume();
+        // Lights out mode
+        mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+    };
+
     /**
      * For testing.
      * 
