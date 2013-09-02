@@ -1,5 +1,5 @@
-scrumdailytimer
-===============
+Scrum Daily Timer
+=================
 
 This android application is a timer specially designed to optimize your scrum daily meeting. 
 If you just want to use it and don't care about the code, you can download it directly from 
