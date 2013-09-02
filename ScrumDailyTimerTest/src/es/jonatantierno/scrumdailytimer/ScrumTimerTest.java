@@ -127,6 +127,40 @@ public class ScrumTimerTest {
     }
 
     @Test
+    public void shouldPauseCountDown() {
+
+        out._startTimer();
+        out.resetCountDown();
+
+        out.tick();
+        out.tick();
+        out.pauseCountDown();
+        out.tick();
+        out.tick();
+
+        assertEquals("00:04", out.getPrettyTime());
+        assertEquals("00:58", out.getPrettyCountDown());
+    }
+
+    @Test
+    public void shouldResumeCountDown() {
+        out._startTimer();
+        out.resetCountDown();
+
+        out.tick();
+        out.tick();
+        out.pauseCountDown();
+        out.tick();
+        out.tick();
+        out.resumeCountDown();
+        out.tick();
+        out.tick();
+
+        assertEquals("00:06", out.getPrettyTime());
+        assertEquals("00:56", out.getPrettyCountDown());
+    }
+
+    @Test
     public void timeSlotDurationShouldBeConfigurable() {
         out.setTimeSlotLength(30);
 

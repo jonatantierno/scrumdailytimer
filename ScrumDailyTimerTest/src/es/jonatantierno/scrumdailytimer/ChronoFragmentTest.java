@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -301,5 +302,66 @@ public class ChronoFragmentTest {
 
         verify(mockEditor).putInt(ChronoFragment.TIME_SLOT_LENGTH, 90);
         verify(mockEditor).commit();
+    }
+
+    /**
+     * When long click, pause countdown
+     */
+    @Test
+    public void whenLongClickThenPauseCountDown() {
+        wholeLayout.performClick();
+
+        wholeLayout.performLongClick();
+
+        verify(mockTimer).pauseCountDown();
+
+    }
+
+    /**
+     * While pressing (pause), don't process taps to increment number of participants.
+     */
+    @Test
+    public void whenInPauseDoNotGoToNextParticipant() {
+        wholeLayout.performClick();
+
+        wholeLayout.performLongClick();
+        when(mockTimer.isCountDownPaused()).thenReturn(true);
+        // This click will be ignored.
+        wholeLayout.performClick();
+
+        assertEquals(1, out.getNumberOfParticipants());
+
+    }
+
+    /**
+     * Don't pause if countdown has not started yet.
+     */
+    @Test
+    public void shouldNotPauseBeforeFirstParticipant() {
+        wholeLayout.performLongClick();
+        verify(mockTimer, times(0)).pauseCountDown();
+    }
+
+    /**
+     * If pause in timeout, then pause tick.
+     */
+    @Test
+    public void whenPauseInTimeoutThenPauseTickSound() {
+
+        // Start first participant 1
+        wholeLayout.performClick();
+
+        out.timeOut();
+
+        verify(mockTickPlayer).start();
+
+        when(mockTickPlayer.isPlaying()).thenReturn(true);
+        wholeLayout.performLongClick();
+
+        when(mockTimer.isCountDownPaused()).thenReturn(true);
+        verify(mockTickPlayer).pause();
+
+        out.endPause();
+        verify(mockTickPlayer, times(2)).start();
     }
 }

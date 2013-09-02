@@ -24,10 +24,16 @@ public class ScrumTimer {
     private Timer mTimer = null;
     private boolean mCountingDown = false;
 
+    private boolean mCountDownPaused = false;
+
     /**
      * Call to start meeting timer.
      */
     public void startTimer() {
+
+        resetCountDown();
+        stopCountDown();
+
         mTimer = new Timer();
 
         mTimer.scheduleAtFixedRate(new TimerTask() {
@@ -94,7 +100,7 @@ public class ScrumTimer {
         mNumberOfSeconds++;
         mChronoInterface.setDailyTimer(getPrettyTime(mNumberOfSeconds));
 
-        if (mCountingDown) {
+        if (mCountingDown && !mCountDownPaused) {
             mCountDown--;
 
             if (mCountDown < 0) {
@@ -169,4 +175,15 @@ public class ScrumTimer {
         mCountDownMax = i;
     }
 
+    public void pauseCountDown() {
+        mCountDownPaused = true;
+    }
+
+    public void resumeCountDown() {
+        mCountDownPaused = false;
+    }
+
+    public boolean isCountDownPaused() {
+        return mCountDownPaused;
+    }
 }

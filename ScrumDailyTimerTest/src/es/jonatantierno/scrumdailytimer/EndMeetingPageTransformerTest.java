@@ -52,10 +52,7 @@ public class EndMeetingPageTransformerTest {
 
         out.transformPage(mockView, -0.25f);
 
-        verify(mockView).setAlpha(0.75f);
-        verify(mockView).setTranslationX(-25f);
-        verify(mockView).setScaleX(1 / 0.75f);
-        verify(mockView).setScaleY(1 / 0.75f);
+        verify(mockView).setAlpha(0.5f);
 
     }
 
@@ -70,8 +67,8 @@ public class EndMeetingPageTransformerTest {
 
         verify(mockView).setAlpha(1f);
         verify(mockView).setTranslationX(-35f);
-        verify(mockView).setScaleX((float) (1 - 0.5 / 6));
-        verify(mockView).setScaleY((float) (1 - 0.5 / 6));
+        verify(mockView).setScaleX((float) (1 - 0.5 / 8));
+        verify(mockView).setScaleY((float) (1 - 0.5 / 8));
 
     }
 }

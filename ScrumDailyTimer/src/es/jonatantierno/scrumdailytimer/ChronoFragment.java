@@ -9,7 +9,9 @@ import android.content.SharedPreferences.Editor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.view.MotionEventCompat;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
@@ -60,6 +62,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     private ChronoStatus mStatus = ChronoStatus.STARTED;
     private Vibrator mVibrator;
 
+    private boolean mPausedInTimeout = false;
     /*
      * Used to reset back press from main activity.
      */
@@ -91,12 +94,52 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         mWholeLayout.setBackgroundResource(R.drawable.background_gradient);
 
         mTapForNextTextView.setText(R.string.tap_for_first_participant);
+
         mScrumTimer.startTimer();
+
+        mWholeLayout.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                if (mStatus == ChronoStatus.STARTED) {
+                    return false;
+                }
+                mWholeLayout.setBackgroundResource(R.drawable.pause_background_gradient);
+                mScrumTimer.pauseCountDown();
+
+                // If tick is playing, then we are in timeout.
+                if (mTickPlayer.isPlaying()) {
+                    mPausedInTimeout = true;
+                    mTickPlayer.pause();
+                }
+
+                return false;
+            }
+        });
+        mWholeLayout.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = MotionEventCompat.getActionMasked(event);
+
+                switch (action) {
+                    case MotionEvent.ACTION_UP:
+                        return endPause();
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
 
         mWholeLayout.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                if (mScrumTimer.isCountDownPaused()) {
+                    return;
+                }
+
                 vibrate();
                 isBackPressReset = true;
 
@@ -140,6 +183,26 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
             }
 
         });
+    }
+
+    /**
+     * For Testing
+     */
+    boolean endPause() {
+        if (mScrumTimer.isCountDownPaused()) {
+
+            // If in timeout, restart tick player and reset timeout background
+            if (mPausedInTimeout) {
+                mTickPlayer.start();
+                mWholeLayout.setBackgroundResource(R.drawable.timeout_background_gradient);
+            } else {
+                mWholeLayout.setBackgroundResource(R.drawable.meeting_background_gradient);
+            }
+            mPausedInTimeout = false;
+            mScrumTimer.resumeCountDown();
+            return true;
+        }
+        return false;
     }
 
     @Override
