@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -49,6 +51,8 @@ public class ResultsFragment extends RoboFragment implements ChronoInterface {
             public void onClick(View v) {
                 mScrumTimer.stopTimer();
                 mTapToFinishTextView.setVisibility(View.GONE);
+                Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.participant_animation);
+                mTotalTimeDataTextView.startAnimation(animation);
             }
         });
     }

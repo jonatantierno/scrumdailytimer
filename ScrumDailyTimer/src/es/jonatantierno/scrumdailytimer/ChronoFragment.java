@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -333,6 +335,9 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         StringBuffer sb = new StringBuffer(getString(R.string.participant));
         sb.append(mNumberOfParticipants);
         mParticipantTextView.setText(sb.toString());
+
+        Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.participant_animation);
+        mParticipantTextView.startAnimation(animation);
     }
 
     void storeSlotTime() {
