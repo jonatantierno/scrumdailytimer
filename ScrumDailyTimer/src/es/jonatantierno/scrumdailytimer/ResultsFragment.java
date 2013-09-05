@@ -49,10 +49,12 @@ public class ResultsFragment extends RoboFragment implements ChronoInterface {
 
             @Override
             public void onClick(View v) {
-                mScrumTimer.stopTimer();
-                mTapToFinishTextView.setVisibility(View.GONE);
-                Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.participant_animation);
-                mTotalTimeDataTextView.startAnimation(animation);
+                if (!mScrumTimer.isStopped()) {
+                    Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.participant_animation);
+                    mTotalTimeDataTextView.startAnimation(animation);
+                }
+                ((MainActivity) (getActivity())).endMeeting();
+                mTapToFinishTextView.setText(R.string.swipe_back_to_restart);
             }
         });
     }

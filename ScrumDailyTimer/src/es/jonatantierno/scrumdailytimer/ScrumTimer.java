@@ -31,10 +31,7 @@ public class ScrumTimer {
      */
     public void startTimer() {
 
-        resetCountDown();
-        stopCountDown();
-
-        mTimer = new Timer();
+        _startTimer();
 
         mTimer.scheduleAtFixedRate(new TimerTask() {
 
@@ -45,14 +42,17 @@ public class ScrumTimer {
             }
         }, 0, 1000);
 
-        _startTimer();
     }
 
     /**
-     * Like startTimer(), only without the timer itself. for testing purposes.
+     * Like startTimer(), only without starting timer. for testing purposes.
      */
     void _startTimer() {
 
+        resetCountDown();
+        stopCountDown();
+
+        mTimer = new Timer();
         mNumberOfSeconds = 0;
 
         mChronoInterface.setDailyTimer(getPrettyTime(mNumberOfSeconds));
@@ -80,6 +80,7 @@ public class ScrumTimer {
     public void stopTimer() {
         if (mTimer != null) {
             mTimer.cancel();
+            mTimer = null;
         }
 
     }
@@ -186,4 +187,14 @@ public class ScrumTimer {
     public boolean isCountDownPaused() {
         return mCountDownPaused;
     }
+
+    /**
+     * Tells if the timer is stopped.
+     * 
+     * @return true if the timer is stopped.
+     */
+    public boolean isStopped() {
+        return mTimer == null;
+    }
+
 }

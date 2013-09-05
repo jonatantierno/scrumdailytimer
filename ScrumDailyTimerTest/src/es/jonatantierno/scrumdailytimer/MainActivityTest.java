@@ -102,14 +102,14 @@ public class MainActivityTest {
     }
 
     /**
-     * Changing view (going to result screen) stops countdown timer (stops tick).
+     * Changing view (going to result screen) does not stop countdown timer (stops tick).
      */
     @Test
-    public void whenResultsScreenSelectedThenStopCountdown() {
+    public void whenResultsScreenSelectedThenDoNotStopCountdown() {
 
         mPagerListener.onPageSelected(1);
 
-        verify(mockTimer).stopCountDown();
+        verify(mockTimer, times(0)).stopCountDown();
 
         assertTrue(mAdapter.getItem(0) instanceof ChronoFragment);
         assertTrue(mAdapter.getItem(1) instanceof ResultsFragment);
@@ -162,21 +162,23 @@ public class MainActivityTest {
         mWholeReportView.performClick();
 
         verify(mockTimer).stopTimer();
+        verify(mockTimer).stopCountDown();
+
         assertEquals(View.GONE, mTapToFinish.getVisibility());
     }
 
     /**
-     * when back to first result, restart for next meeting.
+     * when back to first result, continue meeting.
      */
     @Test
-    public void whenBackToChronoThenRestart() {
+    public void whenBackToChronoThenDoNotRestart() {
         mPagerListener.onPageSelected(1);
 
         // Back
         mPagerListener.onPageSelected(0);
 
         assertFalse(out.isFinishing());
-        verify(mockTimer).stopTimer();
+        verify(mockTimer, times(0)).stopTimer();
         verify(mockTimer, times(3)).configure(Mockito.any(ChronoInterface.class));
     }
 
@@ -224,5 +226,26 @@ public class MainActivityTest {
         out.onBackPressed();
 
         assertFalse(out.isFinishing());
+    }
+
+    @Test
+    public void whenMeetingFinishesThenTimerStartsOnlyWhenBackInChronoFragment() {
+
+        verify(mockTimer, times(1)).startTimer();
+
+        mPagerListener.onPageSelected(1);
+
+        // Meeting finished
+        mWholeReportView.performClick();
+
+        // Don't restart yet...
+        verify(mockTimer, times(1)).startTimer();
+
+        when(mockTimer.isStopped()).thenReturn(true);
+        mPagerListener.onPageSelected(0);
+
+        // ...Now it's the time
+        verify(mockTimer, times(2)).startTimer();
+
     }
 }
