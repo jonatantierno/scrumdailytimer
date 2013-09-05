@@ -363,6 +363,7 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
     public void onStop() {
         super.onStop();
 
+        mScrumTimer.stopCountDown();
         mScrumTimer.stopTimer();
 
         if (mTickPlayer != null) {

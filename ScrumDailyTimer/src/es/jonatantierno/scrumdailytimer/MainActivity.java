@@ -45,17 +45,19 @@ public class MainActivity extends RoboFragmentActivity {
             public void onPageSelected(int i) {
                 // Results
                 if (i == 1) {
-                    mScrumTimer.stopCountDown();
                     mChronoFragment.storeSlotTime();
                     mChronoFragment.pauseTickSound();
                     mResultsFragment.displayData(mChronoFragment);
                     mScrumTimer.configure(mResultsFragment);
                 } else {
-                    // i == 0. Restart for the next daily.
-
-                    mChronoFragment.onStop();
-                    mChronoFragment.onStart();
-                    mChronoFragment.onResume();
+                    // i = 0 -> Chrono fragment
+                    if (mScrumTimer.isStopped()) {
+                        // Restart meeting.
+                        restartMeeting();
+                    } else {
+                        // Continue meeting.
+                        mScrumTimer.configure(mChronoFragment);
+                    }
                 }
             }
 
@@ -136,4 +138,18 @@ public class MainActivity extends RoboFragmentActivity {
             toast.show();
         }
     }
+
+    // Finish meeting, do not restart.
+    public void endMeeting() {
+        mChronoFragment.onStop();
+    }
+
+    /**
+     * Call to end the meeting and restart.
+     */
+    public void restartMeeting() {
+        mChronoFragment.onStart();
+        mChronoFragment.onResume();
+    }
+
 }
