@@ -164,7 +164,7 @@ public class MainActivityTest {
         verify(mockTimer).stopTimer();
         verify(mockTimer).stopCountDown();
 
-        assertEquals(View.GONE, mTapToFinish.getVisibility());
+        assertEquals(out.getString(R.string.swipe_back_to_restart), mTapToFinish.getText().toString());
     }
 
     /**
@@ -195,6 +195,21 @@ public class MainActivityTest {
         out.onBackPressed();
 
         assertTrue(out.isFinishing());
+    }
+
+    /**
+     * When two back presses in then exit.
+     */
+    @Test
+    public void whenBackAndPauseAndBackThenDoNotExit() {
+        out.onBackPressed();
+
+        out.onResume();
+
+        out.onBackPressed();
+
+        assertFalse(out.isFinishing());
+
     }
 
     /**
