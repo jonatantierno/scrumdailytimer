@@ -4,9 +4,10 @@
     <string name="app_name">Scrum Daily Timer</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="tap_for_next">Tap for next, swipe to finish, hold to pause</string>
+    <string name="tap_for_next">Tap for next, swipe for report, hold to pause</string>
     <string name="tap_for_first_participant">Tap for first participant</string>
     <string name="tap_to_finish_daily">Tap to finish daily</string>
+    <string name="swipe_back_to_restart">Swipe back to restart</string>
     <string name="participant">Participant:</string>
     <string name="total_meeting_time">Total meeting time:</string>
     <string name="report_title">Meeting Report</string>

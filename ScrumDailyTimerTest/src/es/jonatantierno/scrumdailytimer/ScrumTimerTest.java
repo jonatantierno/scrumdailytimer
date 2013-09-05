@@ -2,6 +2,8 @@
 package es.jonatantierno.scrumdailytimer;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -167,5 +169,14 @@ public class ScrumTimerTest {
         out._startTimer();
         out.resetCountDown();
         assertEquals(30, out.getCountDownSeconds());
+    }
+
+    @Test
+    public void timerShouldKnowWhenItIsStopped() {
+        assertTrue(out.isStopped());
+        out._startTimer();
+        assertFalse(out.isStopped());
+        out.stopTimer();
+        assertTrue(out.isStopped());
     }
 }
