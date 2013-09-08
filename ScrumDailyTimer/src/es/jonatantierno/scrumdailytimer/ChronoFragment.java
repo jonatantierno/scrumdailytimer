@@ -286,9 +286,14 @@ public class ChronoFragment extends RoboFragment implements ChronoInterface {
         if (mAlarmPlayer != null) {
             mAlarmPlayer.start();
         }
-        if (mTickPlayer != null) {
-            mTickPlayer.start();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (mTickPlayer != null) {
+                    mTickPlayer.start();
+                }
+            }
+        }).start();
 
         getActivity().runOnUiThread(new Runnable() {
 
